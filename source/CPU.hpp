@@ -9,14 +9,14 @@
 
 enum ProcessorStatus : uint8_t
 {
-	CarryFlag        = (1 << 0),
-	ZeroFlag         = (1 << 1),
-	InterruptDisable = (1 << 2),
-	DecimalMode      = (1 << 3),
-	BreakCommand     = (1 << 4),
-	Ignored          = (1 << 5),
-	OverflowFlag     = (1 << 6),
-	NegativeFlag     = (1 << 7)
+	PS_CarryFlag        = (1 << 0),
+	PS_ZeroFlag         = (1 << 1),
+	PS_InterruptDisable = (1 << 2),
+	PS_DecimalMode      = (1 << 3),
+	PS_BreakCommand     = (1 << 4),
+	PS_Ignored          = (1 << 5),
+	PS_OverflowFlag     = (1 << 6),
+	PS_NegativeFlag     = (1 << 7)
 };
 
 struct CPURegisters
@@ -32,7 +32,7 @@ struct CPURegisters
 class CPU
 {
 public:
-    bool Process();
+	bool Process();
 private:
 	void ADC(uint8_t operand);
 	void AND(uint8_t operand) {}
