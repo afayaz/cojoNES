@@ -9,13 +9,14 @@
 
 enum ProcessorStatus : uint8_t
 {
-	CarryFlag = 1,
-	ZeroFlag = 2,
-	InterruptDisable = 4,
-	DecimalMode = 8,
-	BreakCommand = 16,
-	OverflowFlag = 32,
-	NegativeFlag = 64
+	CarryFlag        = (1 << 0),
+	ZeroFlag         = (1 << 1),
+	InterruptDisable = (1 << 2),
+	DecimalMode      = (1 << 3),
+	BreakCommand     = (1 << 4),
+	Ignored          = (1 << 5),
+	OverflowFlag     = (1 << 6),
+	NegativeFlag     = (1 << 7)
 };
 
 struct CPURegisters
