@@ -3,9 +3,14 @@
 #include <cstdint>
 #include <functional>
 #include <map>
+#include <cstdio>
 
 #include "Opcodes.hpp"
 #include "Memory.hpp"
+
+// TODO: Come up with better logging
+#define LOG_UNIMPLEMENTED_OP() printf("Unimplemented op %s \n", __func__)
+#define LOG_UNIMPLEMENTED_FETCH() printf("Unimplemented addressing mode %s \n", __func__)
 
 enum ProcessorStatus : uint8_t
 {
@@ -32,120 +37,125 @@ struct CPURegisters
 class CPU
 {
 public:
+	CPU();
+
+	void Reset();
 	bool Process();
 private:
-	void ADC(uint8_t operand);
-	void AND(uint8_t operand) {}
-	void ASL(uint8_t operand) {}
-	void BCC(uint8_t operand) {}
-	void BCS(uint8_t operand) {}
-	void BEQ(uint8_t operand) {}
-	void BIT(uint8_t operand) {}
-	void BMI(uint8_t operand) {}
-	void BNE(uint8_t operand) {}
-	void BPL(uint8_t operand) {}
-	void BRK(uint8_t operand) {}
-	void BVC(uint8_t operand) {}
-	void BVS(uint8_t operand) {}
-	void CLC(uint8_t operand) {}
-	void CLD(uint8_t operand) {}
-	void CLI(uint8_t operand) {}
-	void CLV(uint8_t operand) {}
-	void CMP(uint8_t operand) {}
-	void CPX(uint8_t operand) {}
-	void CPY(uint8_t operand) {}
-	void DEC(uint8_t operand) {}
-	void DEX(uint8_t operand) {}
-	void DEY(uint8_t operand) {}
-	void EOR(uint8_t operand) {}
-	void INC(uint8_t operand) {}
-	void INX(uint8_t operand) {}
-	void INY(uint8_t operand) {}
-	void JMP(uint8_t operand) {}
-	void JSR(uint8_t operand) {}
-	void LDA(uint8_t operand) {}
-	void LDX(uint8_t operand) {}
-	void LDY(uint8_t operand) {}
-	void LSR(uint8_t operand) {}
-	void NOP(uint8_t operand) {}
-	void ORA(uint8_t operand) {}
-	void PHA(uint8_t operand) {}
-	void PHP(uint8_t operand) {}
-	void PLA(uint8_t operand) {}
-	void PLP(uint8_t operand) {}
-	void ROL(uint8_t operand) {}
-	void ROR(uint8_t operand) {}
-	void RTI(uint8_t operand) {}
-	void RTS(uint8_t operand) {}
-	void SBC(uint8_t operand) {}
-	void SEC(uint8_t operand) {}
-	void SED(uint8_t operand) {}
-	void SEI(uint8_t operand) {}
-	void STA(uint8_t operand) {}
-	void STX(uint8_t operand) {}
-	void STY(uint8_t operand) {}
-	void TAX(uint8_t operand) {}
-	void TAY(uint8_t operand) {}
-	void TSX(uint8_t operand) {}
-	void TXA(uint8_t operand) {}
-	void TXS(uint8_t operand) {}
-	void TYA(uint8_t operand) {}
+	void ADC(uint16_t operand);
+	void AND(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void ASL(uint16_t operand);
+	void BCC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void BCS(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void BEQ(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void BIT(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void BMI(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void BNE(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void BPL(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void BRK(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void BVC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void BVS(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void CLC(uint16_t operand);
+	void CLD(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void CLI(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void CLV(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void CMP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void CPX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void CPY(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void DEC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void DEX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void DEY(uint16_t operand);
+	void EOR(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void INC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void INX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void INY(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void JMP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void JSR(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void LDA(uint16_t operand);
+	void LDX(uint16_t operand);
+	void LDY(uint16_t operand);
+	void LSR(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void NOP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void ORA(uint16_t operand);
+	void PHA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void PHP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void PLA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void PLP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void ROL(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void ROR(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void RTI(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void RTS(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void SBC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void SEC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void SED(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void SEI(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void STA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void STX(uint16_t operand);
+	void STY(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void TAX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void TAY(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void TSX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void TXA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void TXS(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
+	void TYA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
 
 private:
-	uint8_t fetch_immediate()
+	uint16_t fetch_immediate();
+
+	uint16_t fetch_zeropage()
 	{
+		LOG_UNIMPLEMENTED_FETCH();
 		return 0;
 	}
 
-	uint8_t fetch_zeropage()
+	uint16_t fetch_zeropage_X()
 	{
+		LOG_UNIMPLEMENTED_FETCH();
 		return 0;
 	}
 
-	uint8_t fetch_zeropage_X()
+	uint16_t fetch_absolute();
+
+	uint16_t fetch_absolute_X()
 	{
+		LOG_UNIMPLEMENTED_FETCH();
 		return 0;
 	}
 
-	uint8_t fetch_absolute()
+	uint16_t fetch_absolute_Y()
 	{
+		LOG_UNIMPLEMENTED_FETCH();
 		return 0;
 	}
 
-	uint8_t fetch_absolute_X()
+	uint16_t fetch_indirect_X();
+
+	uint16_t fetch_indirect_Y()
 	{
+		LOG_UNIMPLEMENTED_FETCH();
 		return 0;
 	}
 
-	uint8_t fetch_absolute_Y()
+	uint16_t fetch_accumulator();
+
+	uint16_t fetch_relative()
 	{
+		LOG_UNIMPLEMENTED_FETCH();
 		return 0;
 	}
 
-	uint8_t fetch_indirect_X()
+	uint16_t fetch_implied();
+
+	uint16_t fetch_indirect()
 	{
+		LOG_UNIMPLEMENTED_FETCH();
 		return 0;
 	}
-
-	uint8_t fetch_indirect_Y()
+	uint16_t fetch_zeropage_Y()
 	{
+		LOG_UNIMPLEMENTED_FETCH();
 		return 0;
 	}
-
-	// TODO: Check whether these are valid...
-	uint8_t fetch_accumulator()
-	{
-		return 0;
-	}
-
-	uint8_t fetch_relative()
-	{
-		return 0;
-	}
-
-	uint8_t fetch_implied() { return 0; }
-	uint8_t fetch_indirect() { return 0; }
-	uint8_t fetch_zeropage_Y() { return 0; }
 
 	CPURegisters registers = { 0 };
 
@@ -163,8 +173,8 @@ private:
 
 	struct OpFuncs
 	{
-		std::function<uint8_t(CPU*)> fetchFunc;
-		std::function<void(CPU*, uint8_t)> opFunc;
+		std::function<uint16_t(CPU*)> fetchFunc;
+		std::function<void(CPU*, uint16_t)> opFunc;
 	};
 
 	const std::map<const Opcodes, const OpFuncs> opTable
@@ -368,4 +378,6 @@ private:
 		{ Opcodes::TXS, {&CPU::fetch_implied, &CPU::TXS} },
 		{ Opcodes::TYA, {&CPU::fetch_implied, &CPU::TYA} },
 	};
+
+	Memory memory;
 };
