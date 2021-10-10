@@ -1,1 +1,3 @@
 .vscode/*
+.vs/*
+cojoNES.vcxproj.user
