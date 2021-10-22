@@ -1,6 +1,49 @@
 #include "CPU.hpp"
 
 #include <cstdio>
+#include <string>
+
+// Debug helper function
+std::string OpcodeToString(Opcodes opcode)
+{
+	std::string result;
+
+	switch (opcode)
+	{
+		case Opcodes::LDX_immediate:
+			result = "LDX_immediate";
+			break;
+		case Opcodes::STX_absolute:
+			result = "STX_absolute";
+			break;
+		case Opcodes::LDY_absolute:
+			result = "LDY_absolute";
+			break;
+		case Opcodes::LDA_immediate:
+			result = "LDA_immediate";
+			break;
+		case Opcodes::CLC:
+			result = "CLC";
+			break;
+		case Opcodes::ADC_absolute:
+			result = "ADC_absolute";
+			break;
+		case Opcodes::DEY:
+			result = "DEY";
+			break;
+		case Opcodes::BNE_relative:
+			result = "BNE_relative";
+			break;
+		case Opcodes::STA_absolute:
+			result = "STA_absolute";
+			break;
+		default:
+			result = "unknown";
+			break;
+	}
+
+	return result;
+}
 
 CPU::CPU()
 {
@@ -13,35 +56,35 @@ void CPU::Reset()
 	// This is a programme to multiply 10 by 3.
 	// Taken from part 2 of OLCs NES emulator series
 	uint16_t write_addr = 0x8000;
-	memory.write(write_addr++, 0xA2);
-	memory.write(write_addr++, 0x0A);
-	memory.write(write_addr++, 0x8E);
-	memory.write(write_addr++, 0x00);
-	memory.write(write_addr++, 0x00);
-	memory.write(write_addr++, 0xA2);
-	memory.write(write_addr++, 0x03);
-	memory.write(write_addr++, 0x8E);
-	memory.write(write_addr++, 0x01);
-	memory.write(write_addr++, 0x00);
-	memory.write(write_addr++, 0xAC);
-	memory.write(write_addr++, 0x00);
-	memory.write(write_addr++, 0x00);
-	memory.write(write_addr++, 0xA9);
-	memory.write(write_addr++, 0x00);
-	memory.write(write_addr++, 0x18);
-	memory.write(write_addr++, 0x6D);
-	memory.write(write_addr++, 0x01);
-	memory.write(write_addr++, 0x00);
-	memory.write(write_addr++, 0x88);
-	memory.write(write_addr++, 0xD0);
-	memory.write(write_addr++, 0xFA);
-	memory.write(write_addr++, 0x8D);
-	memory.write(write_addr++, 0x02);
-	memory.write(write_addr++, 0x00);
-	memory.write(write_addr++, 0xEA);
-	memory.write(write_addr++, 0xEA);
-	memory.write(write_addr++, 0xEA);
-	
+	memory.write(write_addr++, 0xA2); // LDX_immediate
+	memory.write(write_addr++, 0x0A); // literal 10
+	memory.write(write_addr++, 0x8E); // STX_absolute
+	memory.write(write_addr++, 0x00); // Memory offset 0x00
+	memory.write(write_addr++, 0x00); // Memory page 0x00
+	memory.write(write_addr++, 0xA2); // LDX_immediate
+	memory.write(write_addr++, 0x03); // literal 3
+	memory.write(write_addr++, 0x8E); // STX_absolute
+	memory.write(write_addr++, 0x01); // Memory offset 0x01
+	memory.write(write_addr++, 0x00); // Memory page 0x00
+	memory.write(write_addr++, 0xAC); // LDY_absolute
+	memory.write(write_addr++, 0x00); // Memory offset 0x00
+	memory.write(write_addr++, 0x00); // Memory page 0x00
+	memory.write(write_addr++, 0xA9); // LDA_immediate
+	memory.write(write_addr++, 0x00); // literal 0
+	memory.write(write_addr++, 0x18); // CLC
+	memory.write(write_addr++, 0x6D); // ADC_absolute
+	memory.write(write_addr++, 0x01); // Memory offset 0x01
+	memory.write(write_addr++, 0x00); // Memory page 0x00
+	memory.write(write_addr++, 0x88); // DEY
+	memory.write(write_addr++, 0xD0); // BNE_relative
+	memory.write(write_addr++, 0xFA); // literal -5
+	memory.write(write_addr++, 0x8D); // STA_absolute
+	memory.write(write_addr++, 0x02); // Memory offset 0x02
+	memory.write(write_addr++, 0x00); // Memory page 0x00
+	memory.write(write_addr++, 0xEA); // NOP
+	memory.write(write_addr++, 0xEA); // NOP
+	memory.write(write_addr++, 0xEA); // NOP
+
 	memory.write(0xFFFC, 0x00);
 	memory.write(0xFFFD, 0x80);
 
@@ -56,9 +99,9 @@ bool CPU::Process()
 {
 	bool shouldContinue = true;
 
-	printf("PC is %#02x\n", registers.PC);
+	printf("PC is %#02X\n", registers.PC);
 	Opcodes opcode = static_cast<Opcodes>(memory.read(registers.PC));
-	printf("Executing opcode %#02x\n", static_cast<uint8_t>(opcode));
+	printf("Executing opcode %s (%#02X)\n", OpcodeToString(opcode).c_str(), static_cast<uint8_t>(opcode));
 	auto opcodeIter = opTable.find(opcode);
 	if (opcodeIter != opTable.end())
 	{
@@ -70,10 +113,12 @@ bool CPU::Process()
 		opFunc(operand);
 
 		++registers.PC;
+
+		printf("Registers: ACC = %#02X IX = %#02X IY = %#02X, PC = %#02X, PS = %#02X, SP = %#02X\n", registers.ACC, registers.IX, registers.IY, registers.PC, registers.PS, registers.SP);
 	}
 	else
 	{
-		printf("Illegal opcode %#02x\n", opcode);
+		printf("Illegal opcode %#02X\n", opcode);
 		shouldContinue = false;
 	}
 
@@ -119,6 +164,7 @@ uint16_t CPU::fetch_implied()
 
 void CPU::ADC(uint16_t operand)
 {
+	printf("%s\n", __func__);
 	uint16_t result = registers.ACC + operand + (registers.PS & PS_CarryFlag);
 
 	SetProcessorStatus(PS_CarryFlag, result > 0xFF);
@@ -134,6 +180,7 @@ void CPU::ADC(uint16_t operand)
 
 void CPU::ASL(uint16_t operand)
 {
+	printf("%s\n", __func__);
 	uint16_t result = operand << 1;
 
 	SetProcessorStatus(PS_CarryFlag, result > 0xFF);
@@ -147,11 +194,13 @@ void CPU::ASL(uint16_t operand)
 
 void CPU::CLC(uint16_t operand)
 {
+	printf("%s\n", __func__);
 	SetProcessorStatus(PS_CarryFlag, false);
 }
 
 void CPU::DEY(uint16_t operand)
 {
+	printf("%s\n", __func__);
 	uint8_t result = registers.IY - 1;
 
 	SetProcessorStatus(PS_ZeroFlag, result & 0xFF == 0);
@@ -162,6 +211,7 @@ void CPU::DEY(uint16_t operand)
 
 void CPU::LDA(uint16_t operand)
 {
+	printf("%s\n", __func__);
 	SetProcessorStatus(PS_ZeroFlag, operand & 0xFF == 0);
 	SetProcessorStatus(PS_NegativeFlag, (operand & 0x80) == 0x80);
 
@@ -170,6 +220,7 @@ void CPU::LDA(uint16_t operand)
 
 void CPU::LDX(uint16_t operand)
 {
+	printf("%s\n", __func__);
 	SetProcessorStatus(PS_ZeroFlag, operand & 0xFF == 0);
 	SetProcessorStatus(PS_NegativeFlag, (operand & 0x80) == 0x80);
 
@@ -178,6 +229,7 @@ void CPU::LDX(uint16_t operand)
 
 void CPU::LDY(uint16_t operand)
 {
+	printf("%s\n", __func__);
 	SetProcessorStatus(PS_ZeroFlag, operand & 0xFF == 0);
 	SetProcessorStatus(PS_NegativeFlag, (operand & 0x80) == 0x80);
 
@@ -186,6 +238,7 @@ void CPU::LDY(uint16_t operand)
 
 void CPU::ORA(uint16_t operand)
 {
+	printf("%s\n", __func__);
 	uint8_t result = registers.ACC | (operand & 0xFF);
 
 	SetProcessorStatus(PS_ZeroFlag, result & 0xFF == 0);
@@ -196,5 +249,6 @@ void CPU::ORA(uint16_t operand)
 
 void CPU::STX(uint16_t operand)
 {
+	printf("%s\n", __func__);
 	memory.write(operand, registers.IX);
 }
