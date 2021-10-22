@@ -109,7 +109,7 @@ bool CPU::Process()
 		auto fetchFunc = std::bind(OpFuncs.fetchFunc, this);
 		auto opFunc = std::bind(OpFuncs.opFunc, this, std::placeholders::_1);
 
-		uint16_t operand = fetchFunc();
+		DecodedOperand operand = fetchFunc();
 		opFunc(operand);
 
 		++registers.PC;
@@ -125,52 +125,104 @@ bool CPU::Process()
 	return shouldContinue;
 }
 
-uint16_t CPU::fetch_immediate()
+CPU::DecodedOperand CPU::fetch_immediate()
 {
 	printf("%s\n", __func__);
-	return memory.read(++registers.PC);
+
+	DecodedOperand decoded;
+
+	decoded.operand = memory.read(++registers.PC);
+	decoded.operandType = OT_Value;
+
+	return decoded;
 }
 
-uint16_t CPU::fetch_absolute()
+CPU::DecodedOperand CPU::fetch_absolute()
 {
 	printf("%s\n", __func__);
+
+	DecodedOperand decoded;
+
 	uint16_t lo = memory.read(++registers.PC);
 	uint16_t hi = memory.read(++registers.PC);
 
-	return lo | hi << 8;
+	decoded.operand = lo | hi << 8;
+	decoded.operandType = OT_Address;
+
+	return decoded;
 }
 
-uint16_t CPU::fetch_indirect_X()
+CPU::DecodedOperand CPU::fetch_indirect_X()
 {
 	printf("%s\n", __func__);
+
+	DecodedOperand decoded;
+
 	// TODO: I have no idea if this is right, the description is a bit unclear...
 	uint8_t base_address = memory.read(++registers.PC);
-	return memory.read(base_address + registers.IX + (registers.PS & PS_CarryFlag));
+	decoded.operand = memory.read(base_address + registers.IX + (registers.PS & PS_CarryFlag));
+	decoded.operandType = OT_Address;
+
+	return decoded;
 }
 
-uint16_t CPU::fetch_accumulator()
+CPU::DecodedOperand CPU::fetch_accumulator()
 {
 	printf("%s\n", __func__);
-	++registers.PC;
-	return registers.ACC;
+
+	DecodedOperand decoded;
+
+	decoded.operand = registers.ACC;
+	decoded.operandType = OT_Value;
+
+	return decoded;
 }
 
-uint16_t CPU::fetch_implied()
+CPU::DecodedOperand CPU::fetch_relative()
 {
 	printf("%s\n", __func__);
-	++registers.PC;
-	return 0;
+
+	DecodedOperand decoded;
+
+	// Don't increment the PC here, so the offset below is correct.
+	int16_t relative_address = memory.read(registers.PC + 1);
+	if (relative_address > 0x80)
+	{
+		relative_address -= 0xFF;
+	}
+
+	decoded.operand = registers.PC + relative_address;
+	decoded.operandType = OT_Address;
+
+	return decoded;
 }
 
-void CPU::ADC(uint16_t operand)
+CPU::DecodedOperand CPU::fetch_implied()
 {
 	printf("%s\n", __func__);
-	uint16_t result = registers.ACC + operand + (registers.PS & PS_CarryFlag);
+	return DecodedOperand();
+}
+
+void CPU::ADC(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+
+	uint8_t value = 0;
+	if (decoded.operandType == OT_Address)
+	{
+		value = memory.read(decoded.operand);
+	}
+	else
+	{
+		value = decoded.operand;
+	}
+	
+	uint16_t result = registers.ACC + value + (registers.PS & PS_CarryFlag);
 
 	SetProcessorStatus(PS_CarryFlag, result > 0xFF);
-	SetProcessorStatus(PS_ZeroFlag, result & 0xFF == 0);
+	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
 
-	bool overflow = (operand & 0x80 == registers.ACC & 0x80) && ((operand & 0x80 == 0x80) != (result > 0xFF));
+	bool overflow = ((value & 0x80) == (registers.ACC & 0x80)) && (((value & 0x80) == 0x80) != (result > 0xFF));
 	SetProcessorStatus(PS_OverflowFlag, overflow);
 
 	SetProcessorStatus(PS_NegativeFlag, (result & 0x80) == 0x80);
@@ -178,13 +230,13 @@ void CPU::ADC(uint16_t operand)
 	registers.ACC = result & 0xFF;
 }
 
-void CPU::ASL(uint16_t operand)
+void CPU::ASL(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
-	uint16_t result = operand << 1;
+	uint16_t result = decoded.operand << 1;
 
 	SetProcessorStatus(PS_CarryFlag, result > 0xFF);
-	SetProcessorStatus(PS_ZeroFlag, result & 0xFF == 0);
+	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
 	SetProcessorStatus(PS_NegativeFlag, (result & 0x80) == 0x80);
 
 	// TODO: This can write back to memory if the addressing mode isn't implied.
@@ -192,63 +244,103 @@ void CPU::ASL(uint16_t operand)
 	registers.ACC = result & 0xFF;
 }
 
-void CPU::CLC(uint16_t operand)
+void CPU::BNE(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	if (!GetProcessorStatus(PS_ZeroFlag))
+	{
+		registers.PC = decoded.operand;
+	}
+	else
+	{
+		++registers.PC;
+	}
+}
+
+void CPU::BRK(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+
+#if __has_builtin(__builtin_debugtrap)
+	__builtin_debugtrap();
+#elif defined(_MSC_VER)
+	__debugbreak();
+#else
+	// This is noreturn, so can screw up debugging, but should be ok here...
+	__builtin_trap();
+#endif // 
+}
+
+void CPU::CLC(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
 	SetProcessorStatus(PS_CarryFlag, false);
 }
 
-void CPU::DEY(uint16_t operand)
+void CPU::DEY(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
 	uint8_t result = registers.IY - 1;
 
-	SetProcessorStatus(PS_ZeroFlag, result & 0xFF == 0);
+	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
 	SetProcessorStatus(PS_NegativeFlag, (result & 0x80) == 0x80);
 
 	registers.IY = result;
 }
 
-void CPU::LDA(uint16_t operand)
+void CPU::LDA(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
-	SetProcessorStatus(PS_ZeroFlag, operand & 0xFF == 0);
-	SetProcessorStatus(PS_NegativeFlag, (operand & 0x80) == 0x80);
+	SetProcessorStatus(PS_ZeroFlag, (decoded.operand & 0xFF) == 0);
+	SetProcessorStatus(PS_NegativeFlag, (decoded.operand & 0x80) == 0x80);
 
-	registers.ACC = operand;
+	registers.ACC = static_cast<uint8_t>(decoded.operand);
 }
 
-void CPU::LDX(uint16_t operand)
+void CPU::LDX(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
-	SetProcessorStatus(PS_ZeroFlag, operand & 0xFF == 0);
-	SetProcessorStatus(PS_NegativeFlag, (operand & 0x80) == 0x80);
+	SetProcessorStatus(PS_ZeroFlag, (decoded.operand & 0xFF) == 0);
+	SetProcessorStatus(PS_NegativeFlag, (decoded.operand & 0x80) == 0x80);
 
-	registers.IX = operand;
+	registers.IX = static_cast<uint8_t>(decoded.operand);
 }
 
-void CPU::LDY(uint16_t operand)
+void CPU::LDY(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
-	SetProcessorStatus(PS_ZeroFlag, operand & 0xFF == 0);
-	SetProcessorStatus(PS_NegativeFlag, (operand & 0x80) == 0x80);
+	SetProcessorStatus(PS_ZeroFlag, (decoded.operand & 0xFF) == 0);
+	SetProcessorStatus(PS_NegativeFlag, (decoded.operand & 0x80) == 0x80);
 
-	registers.IY = operand;
+	uint8_t value = memory.read(decoded.operand);
+
+	registers.IY = value;
 }
 
-void CPU::ORA(uint16_t operand)
+void CPU::NOP(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
-	uint8_t result = registers.ACC | (operand & 0xFF);
+}
 
-	SetProcessorStatus(PS_ZeroFlag, result & 0xFF == 0);
+void CPU::ORA(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	uint8_t result = registers.ACC | (decoded.operand & 0xFF);
+
+	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
 	SetProcessorStatus(PS_NegativeFlag, (result & 0x80) == 0x80);
 
 	registers.ACC = result;
 }
 
-void CPU::STX(uint16_t operand)
+void CPU::STA(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
-	memory.write(operand, registers.IX);
+	memory.write(decoded.operand, registers.ACC);
+}
+
+void CPU::STX(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	memory.write(decoded.operand, registers.IX);
 }

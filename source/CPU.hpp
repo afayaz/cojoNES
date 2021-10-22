@@ -41,120 +41,129 @@ public:
 
 	void Reset();
 	bool Process();
-private:
-	void ADC(uint16_t operand);
-	void AND(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void ASL(uint16_t operand);
-	void BCC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void BCS(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void BEQ(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void BIT(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void BMI(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void BNE(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void BPL(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void BRK(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void BVC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void BVS(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void CLC(uint16_t operand);
-	void CLD(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void CLI(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void CLV(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void CMP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void CPX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void CPY(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void DEC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void DEX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void DEY(uint16_t operand);
-	void EOR(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void INC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void INX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void INY(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void JMP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void JSR(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void LDA(uint16_t operand);
-	void LDX(uint16_t operand);
-	void LDY(uint16_t operand);
-	void LSR(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void NOP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void ORA(uint16_t operand);
-	void PHA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void PHP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void PLA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void PLP(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void ROL(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void ROR(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void RTI(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void RTS(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void SBC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void SEC(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void SED(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void SEI(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void STA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void STX(uint16_t operand);
-	void STY(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void TAX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void TAY(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void TSX(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void TXA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void TXS(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
-	void TYA(uint16_t operand) { LOG_UNIMPLEMENTED_OP(); }
 
 private:
-	uint16_t fetch_immediate();
+	enum OperandType
+	{
+		OT_Address,
+		OT_Value
+	};
 
-	uint16_t fetch_zeropage()
+	struct DecodedOperand
+	{
+		uint16_t operand;
+		OperandType operandType;
+	};
+
+	void ADC(DecodedOperand decoded);
+	void AND(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void ASL(DecodedOperand decoded);
+	void BCC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BCS(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BEQ(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BIT(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BMI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BNE(DecodedOperand decoded);
+	void BPL(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BRK(DecodedOperand decoded);
+	void BVC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BVS(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CLC(DecodedOperand decoded);
+	void CLD(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CLI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CLV(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CMP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CPX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CPY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void DEC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void DEX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void DEY(DecodedOperand decoded);
+	void EOR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void INC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void INX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void INY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void JMP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void JSR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void LDA(DecodedOperand decoded);
+	void LDX(DecodedOperand decoded);
+	void LDY(DecodedOperand decoded);
+	void LSR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void NOP(DecodedOperand decoded);
+	void ORA(DecodedOperand decoded);
+	void PHA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void PHP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void PLA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void PLP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void ROL(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void ROR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void RTI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void RTS(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void SBC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void SEC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void SED(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void SEI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void STA(DecodedOperand decoded);
+	void STX(DecodedOperand decoded);
+	void STY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void TAX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void TAY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void TSX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void TXA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void TXS(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void TYA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+
+private:
+	DecodedOperand fetch_immediate();
+
+	DecodedOperand fetch_zeropage()
 	{
 		LOG_UNIMPLEMENTED_FETCH();
-		return 0;
+		return DecodedOperand();
 	}
 
-	uint16_t fetch_zeropage_X()
+	DecodedOperand fetch_zeropage_X()
 	{
 		LOG_UNIMPLEMENTED_FETCH();
-		return 0;
+		return DecodedOperand();
 	}
 
-	uint16_t fetch_absolute();
+	DecodedOperand fetch_absolute();
 
-	uint16_t fetch_absolute_X()
+	DecodedOperand fetch_absolute_X()
 	{
 		LOG_UNIMPLEMENTED_FETCH();
-		return 0;
+		return DecodedOperand();
 	}
 
-	uint16_t fetch_absolute_Y()
+	DecodedOperand fetch_absolute_Y()
 	{
 		LOG_UNIMPLEMENTED_FETCH();
-		return 0;
+		return DecodedOperand();
 	}
 
-	uint16_t fetch_indirect_X();
+	DecodedOperand fetch_indirect_X();
 
-	uint16_t fetch_indirect_Y()
+	DecodedOperand fetch_indirect_Y()
 	{
 		LOG_UNIMPLEMENTED_FETCH();
-		return 0;
+		return DecodedOperand();
 	}
 
-	uint16_t fetch_accumulator();
+	DecodedOperand fetch_accumulator();
 
-	uint16_t fetch_relative()
+	DecodedOperand fetch_relative();
+
+	DecodedOperand fetch_implied();
+
+	DecodedOperand fetch_indirect()
 	{
 		LOG_UNIMPLEMENTED_FETCH();
-		return 0;
+		return DecodedOperand();
 	}
-
-	uint16_t fetch_implied();
-
-	uint16_t fetch_indirect()
+	DecodedOperand fetch_zeropage_Y()
 	{
 		LOG_UNIMPLEMENTED_FETCH();
-		return 0;
-	}
-	uint16_t fetch_zeropage_Y()
-	{
-		LOG_UNIMPLEMENTED_FETCH();
-		return 0;
+		return DecodedOperand();
 	}
 
 	CPURegisters registers = { 0 };
@@ -171,10 +180,15 @@ private:
 		}
 	}
 
+	bool GetProcessorStatus(ProcessorStatus statusFlag)
+	{
+		return (registers.PS & statusFlag) == statusFlag;
+	}
+
 	struct OpFuncs
 	{
-		std::function<uint16_t(CPU*)> fetchFunc;
-		std::function<void(CPU*, uint16_t)> opFunc;
+		std::function<DecodedOperand(CPU*)> fetchFunc;
+		std::function<void(CPU*, DecodedOperand)> opFunc;
 	};
 
 	const std::map<const Opcodes, const OpFuncs> opTable
