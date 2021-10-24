@@ -3,10 +3,12 @@
 #include <cstdint>
 #include <functional>
 #include <map>
+#include <memory>
 #include <cstdio>
 
 #include "Opcodes.hpp"
-#include "Memory.hpp"
+
+class System;
 
 // TODO: Come up with better logging
 #define LOG_UNIMPLEMENTED_OP() printf("Unimplemented op %s \n", __func__)
@@ -37,7 +39,7 @@ struct CPURegisters
 class CPU
 {
 public:
-	CPU();
+	CPU(System* system);
 
 	void Reset();
 	bool Process();
@@ -393,5 +395,7 @@ private:
 		{ Opcodes::TYA, {&CPU::fetch_implied, &CPU::TYA} },
 	};
 
-	Memory memory;
+	// I would prefer to use a shared_ptr here, but it just isn't worth the extra complexity added by having to work
+	// around the fact that the enclosing shared_ptr isn't valid in a constructor.
+	System* mSystem;
 };

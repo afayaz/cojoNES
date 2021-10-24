@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <string>
 
+#include "System.hpp"
+
 // Debug helper function
 std::string OpcodeToString(Opcodes opcode)
 {
@@ -45,7 +47,8 @@ std::string OpcodeToString(Opcodes opcode)
 	return result;
 }
 
-CPU::CPU()
+CPU::CPU(System* system)
+	: mSystem(system)
 {
 	Reset();
 }
@@ -56,41 +59,41 @@ void CPU::Reset()
 	// This is a programme to multiply 10 by 3.
 	// Taken from part 2 of OLCs NES emulator series
 	uint16_t write_addr = 0x8000;
-	memory.write(write_addr++, 0xA2); // LDX_immediate
-	memory.write(write_addr++, 0x0A); // literal 10
-	memory.write(write_addr++, 0x8E); // STX_absolute
-	memory.write(write_addr++, 0x00); // Memory offset 0x00
-	memory.write(write_addr++, 0x00); // Memory page 0x00
-	memory.write(write_addr++, 0xA2); // LDX_immediate
-	memory.write(write_addr++, 0x03); // literal 3
-	memory.write(write_addr++, 0x8E); // STX_absolute
-	memory.write(write_addr++, 0x01); // Memory offset 0x01
-	memory.write(write_addr++, 0x00); // Memory page 0x00
-	memory.write(write_addr++, 0xAC); // LDY_absolute
-	memory.write(write_addr++, 0x00); // Memory offset 0x00
-	memory.write(write_addr++, 0x00); // Memory page 0x00
-	memory.write(write_addr++, 0xA9); // LDA_immediate
-	memory.write(write_addr++, 0x00); // literal 0
-	memory.write(write_addr++, 0x18); // CLC
-	memory.write(write_addr++, 0x6D); // ADC_absolute
-	memory.write(write_addr++, 0x01); // Memory offset 0x01
-	memory.write(write_addr++, 0x00); // Memory page 0x00
-	memory.write(write_addr++, 0x88); // DEY
-	memory.write(write_addr++, 0xD0); // BNE_relative
-	memory.write(write_addr++, 0xFA); // literal -5
-	memory.write(write_addr++, 0x8D); // STA_absolute
-	memory.write(write_addr++, 0x02); // Memory offset 0x02
-	memory.write(write_addr++, 0x00); // Memory page 0x00
-	memory.write(write_addr++, 0xEA); // NOP
-	memory.write(write_addr++, 0xEA); // NOP
-	memory.write(write_addr++, 0xEA); // NOP
+	mSystem->Write(write_addr++, 0xA2); // LDX_immediate
+	mSystem->Write(write_addr++, 0x0A); // literal 10
+	mSystem->Write(write_addr++, 0x8E); // STX_absolute
+	mSystem->Write(write_addr++, 0x00); // Memory offset 0x00
+	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
+	mSystem->Write(write_addr++, 0xA2); // LDX_immediate
+	mSystem->Write(write_addr++, 0x03); // literal 3
+	mSystem->Write(write_addr++, 0x8E); // STX_absolute
+	mSystem->Write(write_addr++, 0x01); // Memory offset 0x01
+	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
+	mSystem->Write(write_addr++, 0xAC); // LDY_absolute
+	mSystem->Write(write_addr++, 0x00); // Memory offset 0x00
+	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
+	mSystem->Write(write_addr++, 0xA9); // LDA_immediate
+	mSystem->Write(write_addr++, 0x00); // literal 0
+	mSystem->Write(write_addr++, 0x18); // CLC
+	mSystem->Write(write_addr++, 0x6D); // ADC_absolute
+	mSystem->Write(write_addr++, 0x01); // Memory offset 0x01
+	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
+	mSystem->Write(write_addr++, 0x88); // DEY
+	mSystem->Write(write_addr++, 0xD0); // BNE_relative
+	mSystem->Write(write_addr++, 0xFA); // literal -5
+	mSystem->Write(write_addr++, 0x8D); // STA_absolute
+	mSystem->Write(write_addr++, 0x02); // Memory offset 0x02
+	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
+	mSystem->Write(write_addr++, 0xEA); // NOP
+	mSystem->Write(write_addr++, 0xEA); // NOP
+	mSystem->Write(write_addr++, 0xEA); // NOP
 
-	memory.write(0xFFFC, 0x00);
-	memory.write(0xFFFD, 0x80);
+	mSystem->Write(0xFFFC, 0x00);
+	mSystem->Write(0xFFFD, 0x80);
 
 	// Use uint16_t to ensure bit shifts don't wrap.
-	uint16_t PC_lo = memory.read(0xFFFC);
-	uint16_t PC_hi = memory.read(0xFFFD);
+	uint16_t PC_lo = mSystem->Read(0xFFFC);
+	uint16_t PC_hi = mSystem->Read(0xFFFD);
 
 	registers.PC = PC_lo | PC_hi << 8;
 }
@@ -100,7 +103,7 @@ bool CPU::Process()
 	bool shouldContinue = true;
 
 	printf("PC is %#02X\n", registers.PC);
-	Opcodes opcode = static_cast<Opcodes>(memory.read(registers.PC));
+	Opcodes opcode = static_cast<Opcodes>(mSystem->Read(registers.PC));
 	printf("Executing opcode %s (%#02X)\n", OpcodeToString(opcode).c_str(), static_cast<uint8_t>(opcode));
 	auto opcodeIter = opTable.find(opcode);
 	if (opcodeIter != opTable.end())
@@ -131,7 +134,7 @@ CPU::DecodedOperand CPU::fetch_immediate()
 
 	DecodedOperand decoded;
 
-	decoded.operand = memory.read(++registers.PC);
+	decoded.operand = mSystem->Read(++registers.PC);
 	decoded.operandType = OT_Value;
 
 	return decoded;
@@ -143,8 +146,8 @@ CPU::DecodedOperand CPU::fetch_absolute()
 
 	DecodedOperand decoded;
 
-	uint16_t lo = memory.read(++registers.PC);
-	uint16_t hi = memory.read(++registers.PC);
+	uint16_t lo = mSystem->Read(++registers.PC);
+	uint16_t hi = mSystem->Read(++registers.PC);
 
 	decoded.operand = lo | hi << 8;
 	decoded.operandType = OT_Address;
@@ -159,8 +162,8 @@ CPU::DecodedOperand CPU::fetch_indirect_X()
 	DecodedOperand decoded;
 
 	// TODO: I have no idea if this is right, the description is a bit unclear...
-	uint8_t base_address = memory.read(++registers.PC);
-	decoded.operand = memory.read(base_address + registers.IX + (registers.PS & PS_CarryFlag));
+	uint8_t base_address = mSystem->Read(++registers.PC);
+	decoded.operand = mSystem->Read(base_address + registers.IX + (registers.PS & PS_CarryFlag));
 	decoded.operandType = OT_Address;
 
 	return decoded;
@@ -185,7 +188,7 @@ CPU::DecodedOperand CPU::fetch_relative()
 	DecodedOperand decoded;
 
 	// Don't increment the PC here, so the offset below is correct.
-	int16_t relative_address = memory.read(registers.PC + 1);
+	int16_t relative_address = mSystem->Read(registers.PC + 1);
 	if (relative_address > 0x80)
 	{
 		relative_address -= 0xFF;
@@ -210,7 +213,7 @@ void CPU::ADC(DecodedOperand decoded)
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
 	{
-		value = memory.read(decoded.operand);
+		value = mSystem->Read(decoded.operand);
 	}
 	else
 	{
@@ -312,7 +315,7 @@ void CPU::LDY(DecodedOperand decoded)
 	SetProcessorStatus(PS_ZeroFlag, (decoded.operand & 0xFF) == 0);
 	SetProcessorStatus(PS_NegativeFlag, (decoded.operand & 0x80) == 0x80);
 
-	uint8_t value = memory.read(decoded.operand);
+	uint8_t value = mSystem->Read(decoded.operand);
 
 	registers.IY = value;
 }
@@ -336,11 +339,11 @@ void CPU::ORA(DecodedOperand decoded)
 void CPU::STA(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
-	memory.write(decoded.operand, registers.ACC);
+	mSystem->Write(decoded.operand, registers.ACC);
 }
 
 void CPU::STX(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
-	memory.write(decoded.operand, registers.IX);
+	mSystem->Write(decoded.operand, registers.IX);
 }

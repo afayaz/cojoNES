@@ -7,8 +7,8 @@
 class Memory
 {
 public:
-	uint8_t read(uint16_t address) { printf("Read %#02X from address %#02X\n", a[address], address); return a[address]; }
-	void    write(uint16_t address, uint8_t data)
+	uint8_t Read(uint16_t address) { printf("Read %#02X from address %#02X\n", a[address], address); return a[address]; }
+	void    Write(uint16_t address, uint8_t data)
 	{
 		printf("Write %#02X to address %#02X\n", data, address);
 		

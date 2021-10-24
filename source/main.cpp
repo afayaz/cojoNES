@@ -1,16 +1,16 @@
-#include "CPU.hpp"
+#include "System.hpp"
 
 int main(int argc, char** argv)
 {
 	//FILE* rom = fopen("test.nes", "rb");
 	//fclose(rom);
 
-	CPU cpu;
+	System system;
 
 	bool loop = true;
 	while (loop)
 	{
-		loop = cpu.Process();
+		loop = system.Process();
 	}
 
 	return 0;
