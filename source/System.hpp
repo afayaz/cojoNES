@@ -8,8 +8,7 @@ class Memory;
 class System
 {
 public:
-	System();
-	~System();
+	System(std::shared_ptr<CPU> cpu, std::shared_ptr<Memory> memory);
 
 	void Reset();
 	bool Process();
@@ -17,6 +16,6 @@ public:
 	uint8_t Read(uint16_t address);
 	void    Write(uint16_t address, uint8_t data);
 private:
-	std::unique_ptr<CPU>    mCPU;
-	std::unique_ptr<Memory> mMemory;
+	std::shared_ptr<CPU>    mCPU;
+	std::shared_ptr<Memory> mMemory;
 };

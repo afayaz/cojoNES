@@ -39,7 +39,7 @@ struct CPURegisters
 class CPU
 {
 public:
-	CPU(System* system);
+	void ConnectSystem(std::shared_ptr<System> system);
 
 	void Reset();
 	bool Process();
@@ -395,7 +395,5 @@ private:
 		{ Opcodes::TYA, {&CPU::fetch_implied, &CPU::TYA} },
 	};
 
-	// I would prefer to use a shared_ptr here, but it just isn't worth the extra complexity added by having to work
-	// around the fact that the enclosing shared_ptr isn't valid in a constructor.
-	System* mSystem;
+	std::shared_ptr<System> mSystem;
 };

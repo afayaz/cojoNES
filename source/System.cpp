@@ -3,15 +3,10 @@
 #include "CPU.hpp"
 #include "Memory.hpp"
 
-System::System()
+System::System(std::shared_ptr<CPU> cpu, std::shared_ptr<Memory> memory)
+	: mCPU(cpu)
+	, mMemory(memory)
 {
-	mMemory = std::make_unique<Memory>();
-	mCPU = std::make_unique<CPU>(this);
-}
-
-System::~System()
-{
-	// This is here for the unique_ptr members which need complete types for destruction.
 }
 
 void System::Reset()

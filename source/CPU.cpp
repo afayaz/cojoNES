@@ -47,16 +47,16 @@ std::string OpcodeToString(Opcodes opcode)
 	return result;
 }
 
-CPU::CPU(System* system)
-	: mSystem(system)
+void CPU::ConnectSystem(std::shared_ptr<System> system)
 {
+	mSystem = system;
 	Reset();
 }
 
 void CPU::Reset()
 {
 	// TODO: Temp data in memory to get started...
-	// This is a programme to multiply 10 by 3.
+	// This is a program to multiply 10 by 3.
 	// Taken from part 2 of OLCs NES emulator series
 	uint16_t write_addr = 0x8000;
 	mSystem->Write(write_addr++, 0xA2); // LDX_immediate
