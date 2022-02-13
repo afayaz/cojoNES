@@ -2,10 +2,12 @@
 
 #include "CPU.hpp"
 #include "Memory.hpp"
+#include "Cartridge.hpp"
 
-System::System(std::shared_ptr<CPU> cpu, std::shared_ptr<Memory> memory)
+System::System(std::shared_ptr<CPU> cpu, std::shared_ptr<Memory> memory, std::shared_ptr<Cartridge> cartridge)
 	: mCPU(cpu)
 	, mMemory(memory)
+	, mCartridge(cartridge)
 {
 }
 
@@ -21,6 +23,11 @@ bool System::Process()
 
 uint8_t System::Read(uint16_t address)
 {
+	if (address >= 0x8000)
+	{
+		return mCartridge->Read(address);
+	}
+
 	// For now, use the entire address space for RAM.
 	return mMemory->Read(address);
 }

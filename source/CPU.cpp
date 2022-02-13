@@ -50,47 +50,10 @@ std::string OpcodeToString(Opcodes opcode)
 void CPU::ConnectSystem(std::shared_ptr<System> system)
 {
 	mSystem = system;
-	Reset();
 }
 
 void CPU::Reset()
 {
-	// TODO: Temp data in memory to get started...
-	// This is a program to multiply 10 by 3.
-	// Taken from part 2 of OLCs NES emulator series
-	uint16_t write_addr = 0x8000;
-	mSystem->Write(write_addr++, 0xA2); // LDX_immediate
-	mSystem->Write(write_addr++, 0x0A); // literal 10
-	mSystem->Write(write_addr++, 0x8E); // STX_absolute
-	mSystem->Write(write_addr++, 0x00); // Memory offset 0x00
-	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
-	mSystem->Write(write_addr++, 0xA2); // LDX_immediate
-	mSystem->Write(write_addr++, 0x03); // literal 3
-	mSystem->Write(write_addr++, 0x8E); // STX_absolute
-	mSystem->Write(write_addr++, 0x01); // Memory offset 0x01
-	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
-	mSystem->Write(write_addr++, 0xAC); // LDY_absolute
-	mSystem->Write(write_addr++, 0x00); // Memory offset 0x00
-	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
-	mSystem->Write(write_addr++, 0xA9); // LDA_immediate
-	mSystem->Write(write_addr++, 0x00); // literal 0
-	mSystem->Write(write_addr++, 0x18); // CLC
-	mSystem->Write(write_addr++, 0x6D); // ADC_absolute
-	mSystem->Write(write_addr++, 0x01); // Memory offset 0x01
-	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
-	mSystem->Write(write_addr++, 0x88); // DEY
-	mSystem->Write(write_addr++, 0xD0); // BNE_relative
-	mSystem->Write(write_addr++, 0xFA); // literal -5
-	mSystem->Write(write_addr++, 0x8D); // STA_absolute
-	mSystem->Write(write_addr++, 0x02); // Memory offset 0x02
-	mSystem->Write(write_addr++, 0x00); // Memory page 0x00
-	mSystem->Write(write_addr++, 0xEA); // NOP
-	mSystem->Write(write_addr++, 0xEA); // NOP
-	mSystem->Write(write_addr++, 0xEA); // NOP
-
-	mSystem->Write(0xFFFC, 0x00);
-	mSystem->Write(0xFFFD, 0x80);
-
 	// Use uint16_t to ensure bit shifts don't wrap.
 	uint16_t PC_lo = mSystem->Read(0xFFFC);
 	uint16_t PC_hi = mSystem->Read(0xFFFD);

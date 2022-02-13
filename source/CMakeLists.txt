@@ -1,3 +1,3 @@
-add_executable(cojoNES main.cpp CPU.cpp System.cpp)
+add_executable(cojoNES main.cpp Cartridge.cpp CPU.cpp ROM.cpp System.cpp)
 target_link_libraries(
   cojoNES)
