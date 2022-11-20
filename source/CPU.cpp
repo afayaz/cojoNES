@@ -59,6 +59,8 @@ void CPU::Reset()
 	uint16_t PC_hi = mSystem->Read(0xFFFD);
 
 	registers.PC = PC_lo | PC_hi << 8;
+
+	registers.SP = 0xFD;
 }
 
 bool CPU::Process()
@@ -103,6 +105,17 @@ CPU::DecodedOperand CPU::fetch_immediate()
 	return decoded;
 }
 
+CPU::DecodedOperand CPU::fetch_zeropage()
+{
+	printf("%s\n", __func__);
+	DecodedOperand decoded;
+
+	decoded.operand = mSystem->Read(++registers.PC);
+	decoded.operandType = OT_Value;
+
+	return decoded;
+}
+
 CPU::DecodedOperand CPU::fetch_absolute()
 {
 	printf("%s\n", __func__);
@@ -118,6 +131,21 @@ CPU::DecodedOperand CPU::fetch_absolute()
 	return decoded;
 }
 
+CPU::DecodedOperand CPU::fetch_absolute_X()
+{
+	printf("%s\n", __func__);
+	DecodedOperand decoded;
+
+	uint16_t lo = mSystem->Read(++registers.PC);
+	uint16_t hi = mSystem->Read(++registers.PC);
+
+	uint8_t baseAddress = lo | hi << 8;
+	decoded.operand = mSystem->Read(baseAddress + registers.IX);
+	decoded.operandType = OT_Address;
+
+	return decoded;
+}
+
 CPU::DecodedOperand CPU::fetch_indirect_X()
 {
 	printf("%s\n", __func__);
@@ -125,8 +153,8 @@ CPU::DecodedOperand CPU::fetch_indirect_X()
 	DecodedOperand decoded;
 
 	// TODO: I have no idea if this is right, the description is a bit unclear...
-	uint8_t base_address = mSystem->Read(++registers.PC);
-	decoded.operand = mSystem->Read(base_address + registers.IX + (registers.PS & PS_CarryFlag));
+	uint8_t baseAddress = mSystem->Read(++registers.PC);
+	decoded.operand = mSystem->Read(baseAddress + registers.IX + (registers.PS & PS_CarryFlag));
 	decoded.operandType = OT_Address;
 
 	return decoded;
@@ -151,13 +179,13 @@ CPU::DecodedOperand CPU::fetch_relative()
 	DecodedOperand decoded;
 
 	// Don't increment the PC here, so the offset below is correct.
-	int16_t relative_address = mSystem->Read(registers.PC + 1);
-	if (relative_address > 0x80)
+	int16_t relativeAddress = mSystem->Read(registers.PC + 1);
+	if (relativeAddress > 0x80)
 	{
-		relative_address -= 0xFF;
+		relativeAddress -= 0xFF;
 	}
 
-	decoded.operand = registers.PC + relative_address;
+	decoded.operand = registers.PC + relativeAddress;
 	decoded.operandType = OT_Address;
 
 	return decoded;
@@ -223,6 +251,19 @@ void CPU::BNE(DecodedOperand decoded)
 	}
 }
 
+void CPU::BPL(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	if (GetProcessorStatus(PS_NegativeFlag))
+	{
+		registers.PC = decoded.operand;
+	}
+	else
+	{
+		++registers.PC;
+	}
+}
+
 void CPU::BRK(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
@@ -243,6 +284,33 @@ void CPU::CLC(DecodedOperand decoded)
 	SetProcessorStatus(PS_CarryFlag, false);
 }
 
+void CPU::CLD(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	SetProcessorStatus(PS_DecimalMode, false);
+}
+
+void CPU::CPX(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	uint8_t result = registers.IX - decoded.operand;
+
+	SetProcessorStatus(PS_CarryFlag, result >= 0);
+	SetProcessorStatus(PS_ZeroFlag, result == 0);
+	SetProcessorStatus(PS_NegativeFlag, result >= 0x80);
+}
+
+void CPU::DEX(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	uint8_t result = registers.IX - 1;
+
+	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
+	SetProcessorStatus(PS_NegativeFlag, (result & 0x80) == 0x80);
+
+	registers.IX = result;
+}
+
 void CPU::DEY(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
@@ -252,6 +320,25 @@ void CPU::DEY(DecodedOperand decoded)
 	SetProcessorStatus(PS_NegativeFlag, (result & 0x80) == 0x80);
 
 	registers.IY = result;
+}
+
+void CPU::INX(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	uint8_t result = registers.IX + 1;
+
+	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
+	SetProcessorStatus(PS_NegativeFlag, (result & 0x80) == 0x80);
+
+	registers.IX = result;
+}
+
+void CPU::JSR(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	mSystem->Write(0x100 + registers.SP--, (registers.PC - 1) >> 8);
+	mSystem->Write(0x100 + registers.SP--, registers.PC  - 1);
+	registers.PC = decoded.operand;
 }
 
 void CPU::LDA(DecodedOperand decoded)
@@ -299,6 +386,20 @@ void CPU::ORA(DecodedOperand decoded)
 	registers.ACC = result;
 }
 
+void CPU::RTS(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+
+	uint16_t returnAddress = mSystem->Read(registers.SP--);
+	registers.PC = returnAddress;
+}
+
+void CPU::SEI(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	SetProcessorStatus(PS_InterruptDisable, true);
+}
+
 void CPU::STA(DecodedOperand decoded)
 {
 	printf("%s\n", __func__);
@@ -310,3 +411,16 @@ void CPU::STX(DecodedOperand decoded)
 	printf("%s\n", __func__);
 	mSystem->Write(decoded.operand, registers.IX);
 }
+
+void CPU::STY(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	mSystem->Write(decoded.operand, registers.IY);
+}
+
+void CPU::TXS(DecodedOperand decoded)
+{
+	printf("%s\n", __func__);
+	mSystem->Write(decoded.operand, registers.SP);
+}
+

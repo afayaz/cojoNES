@@ -11,8 +11,8 @@
 class System;
 
 // TODO: Come up with better logging
-#define LOG_UNIMPLEMENTED_OP() printf("Unimplemented op %s \n", __func__)
-#define LOG_UNIMPLEMENTED_FETCH() printf("Unimplemented addressing mode %s \n", __func__)
+#define LOG_UNIMPLEMENTED_OP() printf("Unimplemented op %s \n", __func__); exit(1)
+#define LOG_UNIMPLEMENTED_FETCH() printf("Unimplemented addressing mode %s \n", __func__); exit(1)
 
 enum ProcessorStatus : uint8_t
 {
@@ -44,6 +44,11 @@ public:
 	void Reset();
 	bool Process();
 
+	bool GetProcessorStatus(ProcessorStatus statusFlag)
+	{
+		return (registers.PS & statusFlag) == statusFlag;
+	}
+
 private:
 	enum OperandType
 	{
@@ -66,26 +71,26 @@ private:
 	void BIT(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void BMI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void BNE(DecodedOperand decoded);
-	void BPL(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BPL(DecodedOperand decoded);
 	void BRK(DecodedOperand decoded);
 	void BVC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void BVS(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void CLC(DecodedOperand decoded);
-	void CLD(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CLD(DecodedOperand decoded);
 	void CLI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void CLV(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void CMP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void CPX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CPX(DecodedOperand decoded);
 	void CPY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void DEC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void DEX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void DEX(DecodedOperand decoded);
 	void DEY(DecodedOperand decoded);
 	void EOR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void INC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void INX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void INX(DecodedOperand decoded);
 	void INY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void JMP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void JSR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void JSR(DecodedOperand decoded);
 	void LDA(DecodedOperand decoded);
 	void LDX(DecodedOperand decoded);
 	void LDY(DecodedOperand decoded);
@@ -99,29 +104,25 @@ private:
 	void ROL(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void ROR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void RTI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void RTS(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void RTS(DecodedOperand decoded);
 	void SBC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void SEC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void SED(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void SEI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void SEI(DecodedOperand decoded);
 	void STA(DecodedOperand decoded);
 	void STX(DecodedOperand decoded);
-	void STY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void STY(DecodedOperand decoded);
 	void TAX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void TAY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void TSX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 	void TXA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void TXS(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void TXS(DecodedOperand decoded);
 	void TYA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
 
 private:
 	DecodedOperand fetch_immediate();
 
-	DecodedOperand fetch_zeropage()
-	{
-		LOG_UNIMPLEMENTED_FETCH();
-		return DecodedOperand();
-	}
+	DecodedOperand fetch_zeropage();
 
 	DecodedOperand fetch_zeropage_X()
 	{
@@ -131,11 +132,7 @@ private:
 
 	DecodedOperand fetch_absolute();
 
-	DecodedOperand fetch_absolute_X()
-	{
-		LOG_UNIMPLEMENTED_FETCH();
-		return DecodedOperand();
-	}
+	DecodedOperand fetch_absolute_X();
 
 	DecodedOperand fetch_absolute_Y()
 	{
@@ -180,11 +177,6 @@ private:
 		{
 			registers.PS = registers.PS & ~statusFlag;
 		}
-	}
-
-	bool GetProcessorStatus(ProcessorStatus statusFlag)
-	{
-		return (registers.PS & statusFlag) == statusFlag;
 	}
 
 	struct OpFuncs
@@ -294,7 +286,7 @@ private:
 		{ Opcodes::JMP_absolute, {&CPU::fetch_absolute, &CPU::JMP} },
 		{ Opcodes::JMP_indirect, {&CPU::fetch_indirect, &CPU::JMP} },
 
-		{ Opcodes::JSR, {&CPU::fetch_implied, &CPU::JSR} },
+		{ Opcodes::JSR, {&CPU::fetch_absolute, &CPU::JSR} },
 
 		{ Opcodes::LDA_immediate, {&CPU::fetch_immediate, &CPU::LDA} },
 		{ Opcodes::LDA_zeropage, {&CPU::fetch_zeropage, &CPU::LDA} },
