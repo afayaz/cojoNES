@@ -23,17 +23,53 @@ bool System::Process()
 
 uint8_t System::Read(uint16_t address)
 {
-	if (address >= 0x8000)
+	if (address < 0x2000)
+	{
+		address &= 0x07FF;
+		return mMemory->Read(address);
+	}
+	else if (address >= 0x2000 && address < 0x4000)
+	{
+		address &= 0x8;
+		address += 0x2000;
+
+		// TODO: PPU.
+	}
+	else if (address >= 0x4000 && address < 0x4018)
+	{
+		// TODO: APU and IO registers.
+	}
+	else if (address >= 0x4020)
 	{
 		return mCartridge->Read(address);
 	}
 
-	// For now, use the entire address space for RAM.
+	// Fall back to RAM for now.
+	// TODO: Open bus behaviour.
 	return mMemory->Read(address);
 }
 
 void System::Write(uint16_t address, uint8_t data)
 {
-	// For now, use the entire address space for RAM.
-	mMemory->Write(address, data);
+	if (address < 0x2000)
+	{
+		address &= 0x07FF;
+
+		mMemory->Write(address, data);
+	}
+	else if (address >= 0x2000 && address < 0x4000)
+	{
+		address &= 0x8;
+		address += 0x2000;
+
+		// TODO: PPU.
+	}
+	else if (address >= 0x4000 && address < 0x4018)
+	{
+		// TODO: APU and IO registers.
+	}
+	else if (address >= 0x4020)
+	{
+		return mCartridge->Write(address, data);
+	}
 }

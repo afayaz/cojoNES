@@ -9,6 +9,7 @@ class Cartridge
 {
 public:
 	bool    Load(const std::string& filename);
+	bool    Load();
 
 	uint8_t Read(uint16_t address);
 	void    Write(uint16_t address, uint8_t data);

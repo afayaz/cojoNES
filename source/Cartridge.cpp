@@ -10,6 +10,12 @@ bool Cartridge::Load(const std::string& filename)
 	return isRomValid;
 }
 
+bool Cartridge::Load()
+{
+	mRom = std::make_shared<ROM>();
+	return mRom->Load();
+}
+
 uint8_t Cartridge::Read(uint16_t address)
 {
 	uint8_t data = 0x00;

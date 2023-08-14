@@ -7,6 +7,7 @@ class ROM
 {
 public:
 	bool Load(const std::string& filename);
+	bool Load();
 
 	std::vector<uint8_t>& GetPrgRom();
 	std::vector<uint8_t>& GetChrRom();

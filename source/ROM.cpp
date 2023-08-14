@@ -84,6 +84,13 @@ bool ROM::Load(const std::string& filename)
 	return success;
 }
 
+bool ROM::Load()
+{
+	mPrgRom.resize(16384, static_cast<uint8_t>(0));
+	mChrRom.resize(16384, static_cast<uint8_t>(0));
+	return true;
+}
+
 std::vector<uint8_t>& ROM::GetPrgRom()
 {
 	return mPrgRom;
