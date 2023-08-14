@@ -83,6 +83,10 @@ bool CPU::Process()
 		++registers.PC;
 
 		printf("Registers: ACC = %#02X IX = %#02X IY = %#02X, PC = %#02X, PS = %#02X, SP = %#02X\n", registers.ACC, registers.IX, registers.IY, registers.PC, registers.PS, registers.SP);
+		if (opcode == Opcodes::BRK)
+		{
+			shouldContinue = false;
+		}
 	}
 	else
 	{
@@ -266,16 +270,8 @@ void CPU::BPL(DecodedOperand decoded)
 
 void CPU::BRK(DecodedOperand decoded)
 {
+	// For now, this will halt execution. See CPU::Process().
 	printf("%s\n", __func__);
-
-#if __has_builtin(__builtin_debugtrap)
-	__builtin_debugtrap();
-#elif defined(_MSC_VER)
-	__debugbreak();
-#else
-	// This is noreturn, so can screw up debugging, but should be ok here...
-	__builtin_trap();
-#endif // 
 }
 
 void CPU::CLC(DecodedOperand decoded)
