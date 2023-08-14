@@ -40,7 +40,9 @@ option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
 
 # TODO: Use conan for dependencies.
 
-# TODO: Implement some unit tests, then add Catch2
+# Catch2 for tests.
+add_subdirectory(dependencies/Catch2)
+include(dependencies/Catch2/extras/Catch.cmake)
 
 # TODO: Implement fuzzing?
 
