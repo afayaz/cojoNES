@@ -44,6 +44,12 @@ option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
 add_subdirectory(dependencies/Catch2)
 include(dependencies/Catch2/extras/Catch.cmake)
 
+# Extra target for tests.
+add_executable(cojoNES_tests tests/test.cpp source/Cartridge.cpp source/CPU.cpp source/ROM.cpp source/System.cpp)
+target_include_directories(cojoNES_tests PRIVATE dependencies/Catch2/src)
+target_include_directories(cojoNES_tests PRIVATE source)
+target_link_libraries(cojoNES_tests PRIVATE Catch2::Catch2WithMain)
+
 # TODO: Implement fuzzing?
 
 add_subdirectory(source)
