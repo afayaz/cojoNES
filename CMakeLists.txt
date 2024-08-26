@@ -1,10 +1,13 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.21)
 
-# This file is heavily based on https://github.com/lefticus/cpp_starter_project.
+# This file is heavily based on https://github.com/lefticus/cpp_starter_project
+# and https://github.com/cpp-best-practices/cmake_template, but using the GitHub
+# template feature is broken.
 
 project(cojoNES CXX)
 include(cmake/StandardProjectSettings.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
+include(cmake/ProjectOptions.cmake)
 
 # Ensure the final binary is built in the root of the build dir
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -38,17 +41,15 @@ option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
 option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
 
-# TODO: Use conan for dependencies.
-
-# Catch2 for tests.
-add_subdirectory(dependencies/Catch2)
-include(dependencies/Catch2/extras/Catch.cmake)
+include(Dependencies.cmake)
+cojoNES_setup_dependencies()
 
 # Extra target for tests.
 add_executable(cojoNES_tests tests/test.cpp source/Cartridge.cpp source/CPU.cpp source/ROM.cpp source/System.cpp)
 target_include_directories(cojoNES_tests PRIVATE dependencies/Catch2/src)
 target_include_directories(cojoNES_tests PRIVATE source)
 target_link_libraries(cojoNES_tests PRIVATE Catch2::Catch2WithMain)
+target_link_system_libraries(cojoNES_tests PRIVATE fmt::fmt spdlog::spdlog)
 
 # TODO: Implement fuzzing?
 
