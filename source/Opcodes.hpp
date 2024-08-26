@@ -1,7 +1,7 @@
 #pragma once
 
 // Based on https://www.masswerk.at/6502/6502_instruction_set.html (Appendix A).
-enum class Opcodes
+enum class Opcodes : uint8_t
 {
 	// ADC: Add memory to accumulator with carry.
 	ADC_immediate = 0x69,
@@ -273,23 +273,205 @@ constexpr const char* OpcodeToString(Opcodes opcode)
 
 	switch (opcode)
 	{
+		case Opcodes::ADC_immediate: result = "ADC_immediate"; break;
+		case Opcodes::ADC_zeropage: result = "ADC_zeropage"; break;
+		case Opcodes::ADC_zeropage_X: result = "ADC_zeropage_X"; break;
 		case Opcodes::ADC_absolute: result = "ADC_absolute"; break;
+		case Opcodes::ADC_absolute_X: result = "ADC_absolute_X"; break;
+		case Opcodes::ADC_absolute_Y: result = "ADC_absolute_Y"; break;
+		case Opcodes::ADC_indirect_X: result = "ADC_indirect_X"; break;
+		case Opcodes::ADC_indirect_Y: result = "ADC_indirect_Y"; break;
+
+		case Opcodes::AND_immediate: result = "AND_immediate"; break;
+		case Opcodes::AND_zeropage: result = "AND_zeropage"; break;
+		case Opcodes::AND_zeropage_X: result = "AND_zeropage_X"; break;
+		case Opcodes::AND_absolute: result = "AND_absolute"; break;
+		case Opcodes::AND_absolute_X: result = "AND_absolute_X"; break;
+		case Opcodes::AND_absolute_Y: result = "AND_absolute_Y"; break;
+		case Opcodes::AND_indirect_X: result = "AND_indirect_X"; break;
+		case Opcodes::AND_indirect_Y: result = "AND_indirect_Y"; break;
+
+		case Opcodes::ASL_accumulator: result = "ASL_accumulator"; break;
+		case Opcodes::ASL_zeropage: result = "ASL_zeropage"; break;
+		case Opcodes::ASL_zeropage_X: result = "ASL_zeropage_X"; break;
+		case Opcodes::ASL_absolute: result = "ASL_absolute"; break;
+		case Opcodes::ASL_absolute_X: result = "ASL_absolute_X"; break;
+
+		case Opcodes::BCC_relative: result = "BCC_relative"; break;
+
+		case Opcodes::BCS_relative: result = "BCS_relative"; break;
+
+		case Opcodes::BEQ_relative: result = "BEQ_relative"; break;
+
+		case Opcodes::BIT_zeropage: result = "BIT_zeropage"; break;
+		case Opcodes::BIT_absolute: result = "BIT_absolute"; break;
+
+		case Opcodes::BMI_relative: result = "BMI_relative"; break;
 
 		case Opcodes::BNE_relative: result = "BNE_relative"; break;
 
+		case Opcodes::BPL_relative: result = "BPL_relative"; break;
+
+		case Opcodes::BRK: result = "BRK"; break;
+
+		case Opcodes::BVC_relative: result = "BVC_relative"; break;
+
+		case Opcodes::BVS_relative: result = "BVS_relative"; break;
+
 		case Opcodes::CLC: result = "CLC"; break;
 
+		case Opcodes::CLD: result = "CLD"; break;
+
+		case Opcodes::CLI: result = "CLI"; break;
+
+		case Opcodes::CLV: result = "CLV"; break;
+
+		case Opcodes::CMP_immediate: result = "CMP_immediate"; break;
+		case Opcodes::CMP_zeropage: result = "CMP_zeropage"; break;
+		case Opcodes::CMP_zeropage_X: result = "CMP_zeropage_X"; break;
+		case Opcodes::CMP_absolute: result = "CMP_absolute"; break;
+		case Opcodes::CMP_absolute_X: result = "CMP_absolute_X"; break;
+		case Opcodes::CMP_absolute_Y: result = "CMP_absolute_Y"; break;
+		case Opcodes::CMP_indirect_X: result = "CMP_indirect_X"; break;
+		case Opcodes::CMP_indirect_Y: result = "CMP_indirect_Y"; break;
+
+		case Opcodes::CPX_immediate: result = "CPX_immediate"; break;
+		case Opcodes::CPX_zeropage: result = "CPX_zeropage"; break;
+		case Opcodes::CPX_absolute: result = "CPX_absolute"; break;
+
+		case Opcodes::CPY_immediate: result = "CPY_immediate"; break;
+		case Opcodes::CPY_zeropage: result = "CPY_zeropage"; break;
+		case Opcodes::CPY_absolute: result = "CPY_absolute"; break;
+
+		case Opcodes::DEC_zeropage: result = "DEC_zeropage"; break;
+		case Opcodes::DEC_zeropage_X: result = "DEC_zeropage_X"; break;
+		case Opcodes::DEC_absolute: result = "DEC_absolute"; break;
+		case Opcodes::DEC_absolute_X: result = "DEC_absolute_X"; break;
+
+		case Opcodes::DEX: result = "DEX"; break;
 		case Opcodes::DEY: result = "DEY"; break;
 
+		case Opcodes::EOR_immediate: result = "EOR_immediate"; break;
+		case Opcodes::EOR_zeropage: result = "EOR_zeropage"; break;
+		case Opcodes::EOR_zeropage_X: result = "EOR_zeropage_X"; break;
+		case Opcodes::EOR_absolute: result = "EOR_absolute"; break;
+		case Opcodes::EOR_absolute_X: result = "EOR_absolute_X"; break;
+		case Opcodes::EOR_absolute_Y: result = "EOR_absolute_Y"; break;
+		case Opcodes::EOR_indirect_X: result = "EOR_indirect_X"; break;
+		case Opcodes::EOR_indirect_Y: result = "EOR_indirect_Y"; break;
+
+		case Opcodes::INC_zeropage: result = "INC_zeropage"; break;
+		case Opcodes::INC_zeropage_X: result = "INC_zeropage_X"; break;
+		case Opcodes::INC_absolute: result = "INC_absolute"; break;
+		case Opcodes::INC_absolute_X: result = "INC_absolute_X"; break;
+
+		case Opcodes::INX: result = "INX"; break;
+
+		case Opcodes::INY: result = "INY"; break;
+
+		case Opcodes::JMP_absolute: result = "JMP_absolute"; break;
+		case Opcodes::JMP_indirect: result = "JMP_indirect"; break;
+
+		case Opcodes::JSR: result = "JSR"; break;
+
 		case Opcodes::LDA_immediate: result = "LDA_immediate"; break;
+		case Opcodes::LDA_zeropage: result = "LDA_zeropage"; break;
+		case Opcodes::LDA_zeropage_X: result = "LDA_zeropage_X"; break;
+		case Opcodes::LDA_absolute: result = "LDA_absolute"; break;
+		case Opcodes::LDA_absolute_X: result = "LDA_absolute_X"; break;
+		case Opcodes::LDA_absolute_Y: result = "LDA_absolute_Y"; break;
+		case Opcodes::LDA_indirect_X: result = "LDA_indirect_X"; break;
+		case Opcodes::LDA_indirect_Y: result = "LDA_indirect_Y"; break;
 
 		case Opcodes::LDX_immediate: result = "LDX_immediate"; break;
+		case Opcodes::LDX_zeropage: result = "LDX_zeropage"; break;
+		case Opcodes::LDX_zeropage_Y: result = "LDX_zeropage_Y"; break;
+		case Opcodes::LDX_absolute: result = "LDX_absolute"; break;
+		case Opcodes::LDX_absolute_Y: result = "LDX_absolute_Y"; break;
 
+		case Opcodes::LDY_immediate: result = "LDY_immediate"; break;
+		case Opcodes::LDY_zeropage: result = "LDY_zeropage"; break;
+		case Opcodes::LDY_zeropage_X: result = "LDY_zeropage_X"; break;
 		case Opcodes::LDY_absolute: result = "LDY_absolute"; break;
-		case Opcodes::STA_absolute: result = "STA_absolute"; break;
+		case Opcodes::LDY_absolute_X: result = "LDY_absolute_X"; break;
 
+		case Opcodes::LSR_accumulator: result = "LSR_accumulator"; break;
+		case Opcodes::LSR_zeropage: result = "LSR_zeropage"; break;
+		case Opcodes::LSR_zeropage_X: result = "LSR_zeropage_X"; break;
+		case Opcodes::LSR_absolute: result = "LSR_absolute"; break;
+		case Opcodes::LSR_absolute_X: result = "LSR_absolute_X"; break;
+
+		case Opcodes::NOP: result = "NOP"; break;
+
+		case Opcodes::ORA_immediate: result = "ORA_immediate"; break;
+		case Opcodes::ORA_zeropage: result = "ORA_zeropage"; break;
+		case Opcodes::ORA_zeropage_X: result = "ORA_zeropage_X"; break;
+		case Opcodes::ORA_absolute: result = "ORA_absolute"; break;
+		case Opcodes::ORA_absolute_X: result = "ORA_absolute_X"; break;
+		case Opcodes::ORA_absolute_Y: result = "ORA_absolute_Y"; break;
+		case Opcodes::ORA_indirect_X: result = "ORA_indirect_X"; break;
+		case Opcodes::ORA_indirect_Y: result = "ORA_indirect_Y"; break;
+
+		case Opcodes::PHA: result = "PHA"; break;
+
+		case Opcodes::PHP: result = "PHP"; break;
+
+		case Opcodes::PLA: result = "PLA"; break;
+
+		case Opcodes::PLP: result = "PLP"; break;
+
+		case Opcodes::ROL_accumulator: result = "ROL_accumulator"; break;
+		case Opcodes::ROL_zeropage: result = "ROL_zeropage"; break;
+		case Opcodes::ROL_zeropage_X: result = "ROL_zeropage_X"; break;
+		case Opcodes::ROL_absolute: result = "ROL_absolute"; break;
+		case Opcodes::ROL_absolute_X: result = "ROL_absolute_X"; break;
+
+		case Opcodes::ROR_accumulator: result = "ROR_accumulator"; break;
+		case Opcodes::ROR_zeropage: result = "ROR_zeropage"; break;
+		case Opcodes::ROR_zeropage_X: result = "ROR_zeropage_X"; break;
+		case Opcodes::ROR_absolute: result = "ROR_absolute"; break;
+		case Opcodes::ROR_absolute_X: result = "ROR_absolute_X"; break;
+
+		case Opcodes::RTI: result = "RTI"; break;
+
+		case Opcodes::RTS: result = "RTS"; break;
+
+		case Opcodes::SBC_immediate: result = "SBC_immediate"; break;
+		case Opcodes::SBC_zeropage: result = "SBC_zeropage"; break;
+		case Opcodes::SBC_zeropage_X: result = "SBC_zeropage_X"; break;
+		case Opcodes::SBC_absolute: result = "SBC_absolute"; break;
+		case Opcodes::SBC_absolute_X: result = "SBC_absolute_X"; break;
+		case Opcodes::SBC_absolute_Y: result = "SBC_absolute_Y"; break;
+		case Opcodes::SBC_indirect_X: result = "SBC_indirect_X"; break;
+		case Opcodes::SBC_indirect_Y: result = "SBC_indirect_Y"; break;
+
+		case Opcodes::SEC: result = "SEC"; break;
+
+		case Opcodes::SED: result = "SED"; break;
+
+		case Opcodes::SEI: result = "SEI"; break;
+
+		case Opcodes::STA_zeropage: result = "STA_zeropage"; break;
+		case Opcodes::STA_zeropage_X: result = "STA_zeropage_X"; break;
+		case Opcodes::STA_absolute: result = "STA_absolute"; break;
+		case Opcodes::STA_absolute_X: result = "STA_absolute_X"; break;
+		case Opcodes::STA_absolute_Y: result = "STA_absolute_Y"; break;
+		case Opcodes::STA_indirect_X: result = "STA_indirect_X"; break;
+		case Opcodes::STA_indirect_Y: result = "STA_indirect_Y"; break;
+
+		case Opcodes::STX_zeropage: result = "STX_zeropage"; break;
+		case Opcodes::STX_zeropage_Y: result = "STX_zeropage_Y"; break;
 		case Opcodes::STX_absolute: result = "STX_absolute"; break;
 
+		case Opcodes::STY_zeropage: result = "STY_zeropage"; break;
+		case Opcodes::STY_zeropage_X: result = "STY_zeropage_X"; break;
+		case Opcodes::STY_absolute: result = "STY_absolute"; break;
+		case Opcodes::TAX: result = "TAX"; break;
+		case Opcodes::TAY: result = "TAY"; break;
+		case Opcodes::TSX: result = "TSX"; break;
+		case Opcodes::TXA: result = "TXA"; break;
+		case Opcodes::TXS: result = "TXS"; break;
+		case Opcodes::TYA: result = "TYA"; break;
 		default: result = "unknown"; break;
 	}
 

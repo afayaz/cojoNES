@@ -62,108 +62,76 @@ private:
 		OperandType operandType;
 	};
 
+	DecodedOperand fetch_immediate();
+	DecodedOperand fetch_zeropage();
+	DecodedOperand fetch_zeropage_X();
+	DecodedOperand fetch_zeropage_Y();
+	DecodedOperand fetch_absolute();
+	DecodedOperand fetch_absolute_X();
+	DecodedOperand fetch_absolute_Y();
+	DecodedOperand fetch_indirect();
+	DecodedOperand fetch_indirect_X();
+	DecodedOperand fetch_indirect_Y();
+	DecodedOperand fetch_accumulator();
+	DecodedOperand fetch_relative();
+	DecodedOperand fetch_implied();
+
 	void ADC(DecodedOperand decoded);
-	void AND(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void AND(DecodedOperand decoded);
 	void ASL(DecodedOperand decoded);
-	void BCC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void BCS(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void BEQ(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void BIT(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void BMI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BCC(DecodedOperand decoded);
+	void BCS(DecodedOperand decoded);
+	void BEQ(DecodedOperand decoded);
+	void BIT(DecodedOperand decoded);
+	void BMI(DecodedOperand decoded);
 	void BNE(DecodedOperand decoded);
 	void BPL(DecodedOperand decoded);
 	void BRK(DecodedOperand decoded);
-	void BVC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void BVS(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void BVC(DecodedOperand decoded);
+	void BVS(DecodedOperand decoded);
 	void CLC(DecodedOperand decoded);
 	void CLD(DecodedOperand decoded);
-	void CLI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void CLV(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void CMP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CLI(DecodedOperand decoded);
+	void CLV(DecodedOperand decoded);
+	void CMP(DecodedOperand decoded);
 	void CPX(DecodedOperand decoded);
-	void CPY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void DEC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void CPY(DecodedOperand decoded);
+	void DEC(DecodedOperand decoded);
 	void DEX(DecodedOperand decoded);
 	void DEY(DecodedOperand decoded);
-	void EOR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void INC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void EOR(DecodedOperand decoded);
+	void INC(DecodedOperand decoded);
 	void INX(DecodedOperand decoded);
-	void INY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void JMP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void INY(DecodedOperand decoded);
+	void JMP(DecodedOperand decoded);
 	void JSR(DecodedOperand decoded);
 	void LDA(DecodedOperand decoded);
 	void LDX(DecodedOperand decoded);
 	void LDY(DecodedOperand decoded);
-	void LSR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void LSR(DecodedOperand decoded);
 	void NOP(DecodedOperand decoded);
 	void ORA(DecodedOperand decoded);
-	void PHA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void PHP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void PLA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void PLP(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void ROL(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void ROR(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void RTI(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void PHA(DecodedOperand decoded);
+	void PHP(DecodedOperand decoded);
+	void PLA(DecodedOperand decoded);
+	void PLP(DecodedOperand decoded);
+	void ROL(DecodedOperand decoded);
+	void ROR(DecodedOperand decoded);
+	void RTI(DecodedOperand decoded);
 	void RTS(DecodedOperand decoded);
-	void SBC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void SEC(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void SED(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void SBC(DecodedOperand decoded);
+	void SEC(DecodedOperand decoded);
+	void SED(DecodedOperand decoded);
 	void SEI(DecodedOperand decoded);
 	void STA(DecodedOperand decoded);
 	void STX(DecodedOperand decoded);
 	void STY(DecodedOperand decoded);
-	void TAX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void TAY(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void TSX(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-	void TXA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
+	void TAX(DecodedOperand decoded);
+	void TAY(DecodedOperand decoded);
+	void TSX(DecodedOperand decoded);
+	void TXA(DecodedOperand decoded);
 	void TXS(DecodedOperand decoded);
-	void TYA(DecodedOperand decoded) { LOG_UNIMPLEMENTED_OP(); }
-
-private:
-	DecodedOperand fetch_immediate();
-
-	DecodedOperand fetch_zeropage();
-
-	DecodedOperand fetch_zeropage_X()
-	{
-		LOG_UNIMPLEMENTED_FETCH();
-		return DecodedOperand();
-	}
-
-	DecodedOperand fetch_absolute();
-
-	DecodedOperand fetch_absolute_X();
-
-	DecodedOperand fetch_absolute_Y()
-	{
-		LOG_UNIMPLEMENTED_FETCH();
-		return DecodedOperand();
-	}
-
-	DecodedOperand fetch_indirect_X();
-
-	DecodedOperand fetch_indirect_Y()
-	{
-		LOG_UNIMPLEMENTED_FETCH();
-		return DecodedOperand();
-	}
-
-	DecodedOperand fetch_accumulator();
-
-	DecodedOperand fetch_relative();
-
-	DecodedOperand fetch_implied();
-
-	DecodedOperand fetch_indirect()
-	{
-		LOG_UNIMPLEMENTED_FETCH();
-		return DecodedOperand();
-	}
-	DecodedOperand fetch_zeropage_Y()
-	{
-		LOG_UNIMPLEMENTED_FETCH();
-		return DecodedOperand();
-	}
+	void TYA(DecodedOperand decoded);
 
 	CPURegisters registers = { 0 };
 
@@ -251,7 +219,7 @@ private:
 
 		{ Opcodes::CPX_immediate, {&CPU::fetch_immediate, &CPU::CPX} },
 		{ Opcodes::CPX_zeropage, {&CPU::fetch_zeropage, &CPU::CPX} },
-		{ Opcodes::CPX_absolute, {&CPU::fetch_zeropage_X, &CPU::CPX} },
+		{ Opcodes::CPX_absolute, {&CPU::fetch_absolute, &CPU::CPX} },
 
 		{ Opcodes::CPY_immediate, {&CPU::fetch_immediate, &CPU::CPY} },
 		{ Opcodes::CPY_zeropage, {&CPU::fetch_zeropage, &CPU::CPY} },
@@ -334,13 +302,13 @@ private:
 
 		{ Opcodes::PLP, {&CPU::fetch_implied, &CPU::PLP} },
 
-		{ Opcodes::ROL_accumulator, {&CPU::fetch_implied, &CPU::ROL} },
+		{ Opcodes::ROL_accumulator, {&CPU::fetch_accumulator, &CPU::ROL} },
 		{ Opcodes::ROL_zeropage, {&CPU::fetch_zeropage, &CPU::ROL} },
 		{ Opcodes::ROL_zeropage_X, {&CPU::fetch_zeropage_X, &CPU::ROL} },
 		{ Opcodes::ROL_absolute, {&CPU::fetch_absolute, &CPU::ROL} },
 		{ Opcodes::ROL_absolute_X, {&CPU::fetch_absolute_X, &CPU::ROL} },
 
-		{ Opcodes::ROR_accumulator, {&CPU::fetch_implied, &CPU::ROR} },
+		{ Opcodes::ROR_accumulator, {&CPU::fetch_accumulator, &CPU::ROR} },
 		{ Opcodes::ROR_zeropage, {&CPU::fetch_zeropage, &CPU::ROR} },
 		{ Opcodes::ROR_zeropage_X, {&CPU::fetch_zeropage_X, &CPU::ROR} },
 		{ Opcodes::ROR_absolute, {&CPU::fetch_absolute, &CPU::ROR} },
