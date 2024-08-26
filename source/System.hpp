@@ -6,7 +6,7 @@ class CPU;
 class Memory;
 class Cartridge;
 
-class System
+class System : public std::enable_shared_from_this<System>
 {
 public:
 	System(std::shared_ptr<CPU> cpu, std::shared_ptr<Memory> memory, std::shared_ptr<Cartridge> cartridge);

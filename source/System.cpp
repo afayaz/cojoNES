@@ -13,6 +13,7 @@ System::System(std::shared_ptr<CPU> cpu, std::shared_ptr<Memory> memory, std::sh
 
 void System::Reset()
 {
+	mCPU->ConnectSystem(shared_from_this());
 	mCPU->Reset();
 }
 

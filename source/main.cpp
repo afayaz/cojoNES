@@ -28,7 +28,6 @@ int main(int argc, char** argv)
 
 	// Initialise system now that ROM is loaded.
 	std::shared_ptr<System> system  = std::make_shared<System>(cpu, memory, cart);
-	cpu->ConnectSystem(system);
 	system->Reset();
 
 	bool loop = true;
