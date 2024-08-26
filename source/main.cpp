@@ -1,5 +1,6 @@
 #include <memory>
-#include <string>
+
+#include <spdlog/spdlog.h>
 
 #include "CPU.hpp"
 #include "Memory.hpp"
@@ -10,7 +11,7 @@ int main(int argc, char** argv)
 {
 	if (argc < 2)
 	{
-		printf("%s\n", "No ROM file specified!");
+		spdlog::error("No ROM file specified!");
 		return 1;
 	}
 
@@ -22,7 +23,7 @@ int main(int argc, char** argv)
 
 	if (!isRomValid)
 	{
-		printf("File \"%s\" is not a valid NES ROM\n", argv[1]);
+		spdlog::error("File \"{}\" is not a valid NES ROM", argv[1]);
 		return 1;
 	}
 

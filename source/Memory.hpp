@@ -1,30 +1,31 @@
 #pragma once
 
 #include <cstdint>
-#include <cstring>
-#include <cstdio>
+
+#include <fmt/core.h>
+#include <spdlog/spdlog.h>
 
 class Memory
 {
 public:
-	uint8_t Read(uint16_t address) { printf("Read %#02X from address %#02X\n", a[address], address); return a[address]; }
+	uint8_t Read(uint16_t address) { spdlog::info("Read {:#04x} from address {:#06x}", a[address], address); return a[address]; }
 	void    Write(uint16_t address, uint8_t data)
 	{
-		printf("Write %#02X to address %#02X\n", data, address);
+		spdlog::info("Write {:#04x} to address {:#06x}", data, address);
 		
 		a[address] = data;
 		
-		printf("Surrounding bytes of memory:\n");
+		spdlog::info("Surrounding bytes of memory:");
 
 		uint16_t base = address & 0xFFF0;
 
-		printf("%#02X: ", base);
+		std::string debugMemBytes = fmt::format("{:#06x}: ", base);
 
 		for (size_t i = base; i < base + 0x0F; ++i)
 		{
-			printf("%#02X ", a[i]);
+			debugMemBytes += fmt::format("{:#04x} ", a[i]);
 		}
-		printf("\n");
+		spdlog::info(debugMemBytes);
 	}
 
 private:

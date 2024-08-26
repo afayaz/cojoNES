@@ -1,5 +1,7 @@
 #include "Cartridge.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include "ROM.hpp"
 
 bool Cartridge::Load(const std::string& filename)
@@ -48,7 +50,7 @@ bool Cartridge::RemapAddress(uint16_t& address)
 	}
 	else
 	{
-		printf("Attempted to access invalid address \"%#02X\" from cartridge!\n", address);
+		spdlog::error("Attempted to access invalid address \"{:#06x}\" from cartridge!", address);
 	}
 
 	return valid;

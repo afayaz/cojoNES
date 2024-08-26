@@ -4,15 +4,10 @@
 #include <functional>
 #include <map>
 #include <memory>
-#include <cstdio>
 
 #include "Opcodes.hpp"
 
 class System;
-
-// TODO: Come up with better logging
-#define LOG_UNIMPLEMENTED_OP() printf("Unimplemented op %s \n", __func__); exit(1)
-#define LOG_UNIMPLEMENTED_FETCH() printf("Unimplemented addressing mode %s \n", __func__); exit(1)
 
 enum ProcessorStatus : uint8_t
 {
