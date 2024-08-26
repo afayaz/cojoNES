@@ -265,3 +265,33 @@ enum class Opcodes
 	// TYA  Transfer Index Y to Accumulator
 	TYA = 0x98,
 };
+
+// Debug helper function
+constexpr const char* OpcodeToString(Opcodes opcode)
+{
+	const char* result = "";
+
+	switch (opcode)
+	{
+		case Opcodes::ADC_absolute: result = "ADC_absolute"; break;
+
+		case Opcodes::BNE_relative: result = "BNE_relative"; break;
+
+		case Opcodes::CLC: result = "CLC"; break;
+
+		case Opcodes::DEY: result = "DEY"; break;
+
+		case Opcodes::LDA_immediate: result = "LDA_immediate"; break;
+
+		case Opcodes::LDX_immediate: result = "LDX_immediate"; break;
+
+		case Opcodes::LDY_absolute: result = "LDY_absolute"; break;
+		case Opcodes::STA_absolute: result = "STA_absolute"; break;
+
+		case Opcodes::STX_absolute: result = "STX_absolute"; break;
+
+		default: result = "unknown"; break;
+	}
+
+	return result;
+}

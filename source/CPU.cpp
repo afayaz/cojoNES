@@ -5,48 +5,6 @@
 
 #include "System.hpp"
 
-// Debug helper function
-std::string OpcodeToString(Opcodes opcode)
-{
-	std::string result;
-
-	switch (opcode)
-	{
-		case Opcodes::LDX_immediate:
-			result = "LDX_immediate";
-			break;
-		case Opcodes::STX_absolute:
-			result = "STX_absolute";
-			break;
-		case Opcodes::LDY_absolute:
-			result = "LDY_absolute";
-			break;
-		case Opcodes::LDA_immediate:
-			result = "LDA_immediate";
-			break;
-		case Opcodes::CLC:
-			result = "CLC";
-			break;
-		case Opcodes::ADC_absolute:
-			result = "ADC_absolute";
-			break;
-		case Opcodes::DEY:
-			result = "DEY";
-			break;
-		case Opcodes::BNE_relative:
-			result = "BNE_relative";
-			break;
-		case Opcodes::STA_absolute:
-			result = "STA_absolute";
-			break;
-		default:
-			result = "unknown";
-			break;
-	}
-
-	return result;
-}
-
 void CPU::ConnectSystem(std::shared_ptr<System> system)
 {
 	mSystem = system;
@@ -69,7 +27,7 @@ bool CPU::Process()
 
 	printf("PC is %#02X\n", registers.PC);
 	Opcodes opcode = static_cast<Opcodes>(mSystem->Read(registers.PC));
-	printf("Executing opcode %s (%#02X)\n", OpcodeToString(opcode).c_str(), static_cast<uint8_t>(opcode));
+	printf("Executing opcode %s (%#02X)\n", OpcodeToString(opcode), static_cast<uint8_t>(opcode));
 	auto opcodeIter = opTable.find(opcode);
 	if (opcodeIter != opTable.end())
 	{
