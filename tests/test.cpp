@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <spdlog/spdlog.h>
+
 #include "CPU.hpp"
 #include "Memory.hpp"
 #include "System.hpp"
@@ -14,6 +16,8 @@ std::shared_ptr<System>    sSystem;
 
 void InitSystem()
 {
+	spdlog::set_level(spdlog::level::trace);
+
 	sCpu = std::make_shared<CPU>();
 	sMemory = std::make_shared<Memory>();
 	sCart = std::make_shared<Cartridge>();
