@@ -9,9 +9,11 @@
 
 int main(int argc, char** argv)
 {
+	spdlog::set_pattern("[%Y/%m/%d %T.%e] [%s:%#] [%l] %v");
+
 	if (argc < 2)
 	{
-		spdlog::error("No ROM file specified!");
+		SPDLOG_ERROR("No ROM file specified!");
 		return 1;
 	}
 
@@ -23,7 +25,7 @@ int main(int argc, char** argv)
 
 	if (!isRomValid)
 	{
-		spdlog::error("File \"{}\" is not a valid NES ROM", argv[1]);
+		SPDLOG_ERROR("File \"{}\" is not a valid NES ROM", argv[1]);
 		return 1;
 	}
 

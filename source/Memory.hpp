@@ -8,14 +8,14 @@
 class Memory
 {
 public:
-	uint8_t Read(uint16_t address) { spdlog::info("Read {:#04x} from address {:#06x}", a[address], address); return a[address]; }
+	uint8_t Read(uint16_t address) { SPDLOG_INFO("Read {:#04x} from address {:#06x}", a[address], address); return a[address]; }
 	void    Write(uint16_t address, uint8_t data)
 	{
-		spdlog::info("Write {:#04x} to address {:#06x}", data, address);
+		SPDLOG_INFO("Write {:#04x} to address {:#06x}", data, address);
 		
 		a[address] = data;
 		
-		spdlog::info("Surrounding bytes of memory:");
+		SPDLOG_INFO("Surrounding bytes of memory:");
 
 		uint16_t base = address & 0xFFF0;
 
@@ -25,7 +25,7 @@ public:
 		{
 			debugMemBytes += fmt::format("{:#04x} ", a[i]);
 		}
-		spdlog::info(debugMemBytes);
+		SPDLOG_INFO(debugMemBytes);
 	}
 
 private:

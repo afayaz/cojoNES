@@ -50,7 +50,7 @@ bool Cartridge::RemapAddress(uint16_t& address)
 	}
 	else
 	{
-		spdlog::error("Attempted to access invalid address \"{:#06x}\" from cartridge!", address);
+		SPDLOG_ERROR("Attempted to access invalid address \"{:#06x}\" from cartridge!", address);
 	}
 
 	return valid;

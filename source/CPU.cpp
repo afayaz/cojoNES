@@ -24,9 +24,9 @@ bool CPU::Process()
 {
 	bool shouldContinue = true;
 
-	spdlog::info("PC is {:#06x}", registers.PC);
+	SPDLOG_INFO("PC is {:#06x}", registers.PC);
 	Opcodes opcode = static_cast<Opcodes>(mSystem->Read(registers.PC));
-	spdlog::info("Executing opcode {} ({:#04x})", OpcodeToString(opcode), static_cast<uint8_t>(opcode));
+	SPDLOG_INFO("Executing opcode {} ({:#04x})", OpcodeToString(opcode), static_cast<uint8_t>(opcode));
 	auto opcodeIter = opTable.find(opcode);
 	if (opcodeIter != opTable.end())
 	{
@@ -39,7 +39,7 @@ bool CPU::Process()
 
 		++registers.PC;
 
-		spdlog::info("Registers: ACC = {:#04x} IX = {:#04x} IY = {:#04x}, PC = {:#06x}, PS = {:#04x}, SP = {:#04x}", registers.ACC, registers.IX, registers.IY, registers.PC, registers.PS, registers.SP);
+		SPDLOG_INFO("Registers: ACC = {:#04x} IX = {:#04x} IY = {:#04x}, PC = {:#06x}, PS = {:#04x}, SP = {:#04x}", registers.ACC, registers.IX, registers.IY, registers.PC, registers.PS, registers.SP);
 		if (opcode == Opcodes::BRK)
 		{
 			shouldContinue = false;
@@ -47,7 +47,7 @@ bool CPU::Process()
 	}
 	else
 	{
-		spdlog::error("Illegal opcode {:#04x}", static_cast<uint8_t>(opcode));
+		SPDLOG_ERROR("Illegal opcode {:#04x}", static_cast<uint8_t>(opcode));
 		shouldContinue = false;
 	}
 
@@ -56,7 +56,7 @@ bool CPU::Process()
 
 CPU::DecodedOperand CPU::fetch_immediate()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	DecodedOperand decoded;
 
@@ -68,7 +68,7 @@ CPU::DecodedOperand CPU::fetch_immediate()
 
 CPU::DecodedOperand CPU::fetch_zeropage()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
 	decoded.operand = mSystem->Read(++registers.PC);
@@ -79,7 +79,7 @@ CPU::DecodedOperand CPU::fetch_zeropage()
 
 CPU::DecodedOperand CPU::fetch_zeropage_X()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
 	decoded.operand = mSystem->Read(++registers.PC) + registers.IX;
@@ -90,7 +90,7 @@ CPU::DecodedOperand CPU::fetch_zeropage_X()
 
 CPU::DecodedOperand CPU::fetch_zeropage_Y()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
 	decoded.operand = mSystem->Read(++registers.PC) + registers.IY;
@@ -101,7 +101,7 @@ CPU::DecodedOperand CPU::fetch_zeropage_Y()
 
 CPU::DecodedOperand CPU::fetch_absolute()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	DecodedOperand decoded;
 
@@ -116,7 +116,7 @@ CPU::DecodedOperand CPU::fetch_absolute()
 
 CPU::DecodedOperand CPU::fetch_absolute_X()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
 	uint16_t lo = mSystem->Read(++registers.PC);
@@ -131,7 +131,7 @@ CPU::DecodedOperand CPU::fetch_absolute_X()
 
 CPU::DecodedOperand CPU::fetch_absolute_Y()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
 	uint16_t lo = mSystem->Read(++registers.PC);
@@ -146,13 +146,13 @@ CPU::DecodedOperand CPU::fetch_absolute_Y()
 
 CPU::DecodedOperand CPU::fetch_indirect()
 {
-	spdlog::error("Unimplemented addressing mode %s", __func__);
+	SPDLOG_ERROR("Unimplemented addressing mode %s", __func__);
 	return DecodedOperand();
 }
 
 CPU::DecodedOperand CPU::fetch_indirect_X()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	DecodedOperand decoded;
 
@@ -166,7 +166,7 @@ CPU::DecodedOperand CPU::fetch_indirect_X()
 
 CPU::DecodedOperand CPU::fetch_indirect_Y()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	DecodedOperand decoded;
 
@@ -180,7 +180,7 @@ CPU::DecodedOperand CPU::fetch_indirect_Y()
 
 CPU::DecodedOperand CPU::fetch_accumulator()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	DecodedOperand decoded;
 
@@ -192,7 +192,7 @@ CPU::DecodedOperand CPU::fetch_accumulator()
 
 CPU::DecodedOperand CPU::fetch_relative()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	DecodedOperand decoded;
 
@@ -211,7 +211,7 @@ CPU::DecodedOperand CPU::fetch_relative()
 
 CPU::DecodedOperand CPU::fetch_implied()
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	DecodedOperand decoded;
 
@@ -223,7 +223,7 @@ CPU::DecodedOperand CPU::fetch_implied()
 
 void CPU::ADC(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
@@ -262,7 +262,7 @@ void CPU::ADC(DecodedOperand decoded)
 
 void CPU::AND(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
@@ -284,7 +284,7 @@ void CPU::AND(DecodedOperand decoded)
 
 void CPU::ASL(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
 	{
@@ -313,7 +313,7 @@ void CPU::ASL(DecodedOperand decoded)
 
 void CPU::BCC(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	if (!GetProcessorStatus(PS_CarryFlag))
 	{
 		registers.PC = decoded.operand;
@@ -326,7 +326,7 @@ void CPU::BCC(DecodedOperand decoded)
 
 void CPU::BCS(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	if (GetProcessorStatus(PS_CarryFlag))
 	{
 		registers.PC = decoded.operand;
@@ -339,7 +339,7 @@ void CPU::BCS(DecodedOperand decoded)
 
 void CPU::BEQ(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	if (GetProcessorStatus(PS_ZeroFlag))
 	{
 		registers.PC = decoded.operand;
@@ -352,7 +352,7 @@ void CPU::BEQ(DecodedOperand decoded)
 
 void CPU::BIT(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	// This is only supported with Absolute and Zero Page addressing.
 	uint8_t result = mSystem->Read(decoded.operand);
@@ -365,7 +365,7 @@ void CPU::BIT(DecodedOperand decoded)
 
 void CPU::BMI(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	if (GetProcessorStatus(PS_NegativeFlag))
 	{
 		registers.PC = decoded.operand;
@@ -378,7 +378,7 @@ void CPU::BMI(DecodedOperand decoded)
 
 void CPU::BNE(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	if (!GetProcessorStatus(PS_ZeroFlag))
 	{
 		registers.PC = decoded.operand;
@@ -391,7 +391,7 @@ void CPU::BNE(DecodedOperand decoded)
 
 void CPU::BPL(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	if (!GetProcessorStatus(PS_NegativeFlag))
 	{
 		registers.PC = decoded.operand;
@@ -405,12 +405,12 @@ void CPU::BPL(DecodedOperand decoded)
 void CPU::BRK(DecodedOperand decoded)
 {
 	// For now, this will halt execution. See CPU::Process().
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 }
 
 void CPU::BVC(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	if (!GetProcessorStatus(PS_OverflowFlag))
 	{
 		registers.PC = decoded.operand;
@@ -423,7 +423,7 @@ void CPU::BVC(DecodedOperand decoded)
 
 void CPU::BVS(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	if (GetProcessorStatus(PS_OverflowFlag))
 	{
 		registers.PC = decoded.operand;
@@ -436,31 +436,31 @@ void CPU::BVS(DecodedOperand decoded)
 
 void CPU::CLC(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	SetProcessorStatus(PS_CarryFlag, false);
 }
 
 void CPU::CLD(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	SetProcessorStatus(PS_DecimalMode, false);
 }
 
 void CPU::CLI(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	SetProcessorStatus(PS_InterruptDisable, false);
 }
 
 void CPU::CLV(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	SetProcessorStatus(PS_OverflowFlag, false);
 }
 
 void CPU::CMP(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
 	{
@@ -479,7 +479,7 @@ void CPU::CMP(DecodedOperand decoded)
 
 void CPU::CPX(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
 	{
@@ -498,7 +498,7 @@ void CPU::CPX(DecodedOperand decoded)
 
 void CPU::CPY(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
 	{
@@ -517,7 +517,7 @@ void CPU::CPY(DecodedOperand decoded)
 
 void CPU::DEC(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t result = mSystem->Read(decoded.operand);
 	--result;
 
@@ -529,7 +529,7 @@ void CPU::DEC(DecodedOperand decoded)
 
 void CPU::DEX(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t result = registers.IX - 1;
 
 	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
@@ -540,7 +540,7 @@ void CPU::DEX(DecodedOperand decoded)
 
 void CPU::DEY(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t result = registers.IY - 1;
 
 	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
@@ -551,7 +551,7 @@ void CPU::DEY(DecodedOperand decoded)
 
 void CPU::EOR(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
@@ -573,7 +573,7 @@ void CPU::EOR(DecodedOperand decoded)
 
 void CPU::INC(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t result = mSystem->Read(decoded.operand);
 	++result;
 
@@ -585,7 +585,7 @@ void CPU::INC(DecodedOperand decoded)
 
 void CPU::INX(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t result = registers.IX + 1;
 
 	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
@@ -596,7 +596,7 @@ void CPU::INX(DecodedOperand decoded)
 
 void CPU::INY(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t result = registers.IY + 1;
 
 	SetProcessorStatus(PS_ZeroFlag, (result & 0xFF) == 0);
@@ -607,13 +607,13 @@ void CPU::INY(DecodedOperand decoded)
 
 void CPU::JMP(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	registers.PC = decoded.operand;
 }
 
 void CPU::JSR(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	mSystem->Write(0x100 + registers.SP--, (registers.PC - 1) >> 8);
 	mSystem->Write(0x100 + registers.SP--, registers.PC  - 1);
 	registers.PC = decoded.operand;
@@ -621,7 +621,7 @@ void CPU::JSR(DecodedOperand decoded)
 
 void CPU::LDA(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
@@ -641,7 +641,7 @@ void CPU::LDA(DecodedOperand decoded)
 
 void CPU::LDX(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
@@ -661,7 +661,7 @@ void CPU::LDX(DecodedOperand decoded)
 
 void CPU::LDY(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
@@ -681,7 +681,7 @@ void CPU::LDY(DecodedOperand decoded)
 
 void CPU::LSR(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
 	{
@@ -711,12 +711,12 @@ void CPU::LSR(DecodedOperand decoded)
 
 void CPU::NOP(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 }
 
 void CPU::ORA(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
 	{
@@ -737,31 +737,31 @@ void CPU::ORA(DecodedOperand decoded)
 
 void CPU::PHA(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	mSystem->Write(0x100 + registers.SP--, registers.ACC);
 }
 
 void CPU::PHP(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	mSystem->Write(0x100 + registers.SP--, registers.PS);
 }
 
 void CPU::PLA(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	registers.ACC = mSystem->Read(0x100 + ++registers.SP);
 }
 
 void CPU::PLP(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	registers.PS = mSystem->Read(0x100 + ++registers.SP);
 }
 
 void CPU::ROL(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
 	{
@@ -792,7 +792,7 @@ void CPU::ROL(DecodedOperand decoded)
 
 void CPU::ROR(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
 	{
@@ -823,14 +823,14 @@ void CPU::ROR(DecodedOperand decoded)
 
 void CPU::RTI(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	registers.PS = mSystem->Read(0x100 + registers.SP++);
 }
 
 void CPU::RTS(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	uint8_t lo = mSystem->Read(0x100 + registers.SP++);
 	uint8_t hi = mSystem->Read(0x100 + registers.SP++);
@@ -840,7 +840,7 @@ void CPU::RTS(DecodedOperand decoded)
 
 void CPU::SBC(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 
 	uint8_t value = 0;
 	if (decoded.operandType == OT_Address)
@@ -868,43 +868,43 @@ void CPU::SBC(DecodedOperand decoded)
 
 void CPU::SEC(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	SetProcessorStatus(PS_CarryFlag, true);
 }
 
 void CPU::SED(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	SetProcessorStatus(PS_DecimalMode, true);
 }
 
 void CPU::SEI(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	SetProcessorStatus(PS_InterruptDisable, true);
 }
 
 void CPU::STA(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	mSystem->Write(decoded.operand, registers.ACC);
 }
 
 void CPU::STX(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	mSystem->Write(decoded.operand, registers.IX);
 }
 
 void CPU::STY(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	mSystem->Write(decoded.operand, registers.IY);
 }
 
 void CPU::TAX(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	registers.IX = registers.ACC;
 
 	SetProcessorStatus(PS_ZeroFlag, registers.IX == 0);
@@ -913,7 +913,7 @@ void CPU::TAX(DecodedOperand decoded)
 
 void CPU::TAY(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	registers.IY = registers.ACC;
 
 	SetProcessorStatus(PS_ZeroFlag, registers.IY == 0);
@@ -922,7 +922,7 @@ void CPU::TAY(DecodedOperand decoded)
 
 void CPU::TSX(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	registers.IX = registers.SP;
 
 	SetProcessorStatus(PS_ZeroFlag, registers.IX == 0);
@@ -931,7 +931,7 @@ void CPU::TSX(DecodedOperand decoded)
 
 void CPU::TXA(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	registers.ACC = registers.IX;
 
 	SetProcessorStatus(PS_ZeroFlag, registers.ACC == 0);
@@ -940,7 +940,7 @@ void CPU::TXA(DecodedOperand decoded)
 
 void CPU::TXS(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	registers.SP = registers.IX;
 
 	SetProcessorStatus(PS_ZeroFlag, registers.SP == 0);
@@ -949,7 +949,7 @@ void CPU::TXS(DecodedOperand decoded)
 
 void CPU::TYA(DecodedOperand decoded)
 {
-	spdlog::info("{}", __func__);
+	SPDLOG_INFO("{}", __func__);
 	registers.ACC = registers.IY;
 
 	SetProcessorStatus(PS_ZeroFlag, registers.ACC == 0);
