@@ -146,8 +146,24 @@ CPU::DecodedOperand CPU::fetch_absolute_Y()
 
 CPU::DecodedOperand CPU::fetch_indirect()
 {
-	SPDLOG_ERROR("Unimplemented addressing mode %s", __func__);
-	return DecodedOperand();
+	SPDLOG_INFO("{}", __func__);
+
+	DecodedOperand decoded;
+
+	uint16_t baseAddress_lo = mSystem->Read(++registers.PC);
+	uint16_t baseAddress_hi = mSystem->Read(++registers.PC);
+
+	uint16_t baseAddress = baseAddress_lo | baseAddress_hi << 8;
+	
+	uint16_t indirectAddress_lo = mSystem->Read(baseAddress);
+	uint16_t indirectAddress_hi = mSystem->Read(++baseAddress);
+
+	uint16_t indirectAddress = indirectAddress_lo | indirectAddress_hi << 8;
+
+	decoded.operand = indirectAddress;
+	decoded.operandType = OT_Address;
+
+	return decoded;
 }
 
 CPU::DecodedOperand CPU::fetch_indirect_X()
@@ -608,7 +624,7 @@ void CPU::INY(DecodedOperand decoded)
 void CPU::JMP(DecodedOperand decoded)
 {
 	SPDLOG_INFO("{}", __func__);
-	registers.PC = decoded.operand;
+	registers.PC = decoded.operand - 1;
 }
 
 void CPU::JSR(DecodedOperand decoded)
