@@ -651,27 +651,29 @@ TEST_CASE("JMP", "[CPU]")
 	sCart->Write(write_addr++, 0x00); // Memory offset 0x00
 	sCart->Write(write_addr++, 0x00); // Memory page 0x00
 
-	// Store address 0x8017 into 0x0002 and 0x0003 (address of NOP at end of program).
+	// Store address 0x8017 into 0x0001 and 0x0002 (address of NOP near end of program).
 	sCart->Write(write_addr++, 0xA9); // LDA_immediate
 	sCart->Write(write_addr++, 0x17); // literal 23
 	sCart->Write(write_addr++, 0x8D); // STA_absolute
-	sCart->Write(write_addr++, 0x02); // Memory offset 0x02
+	sCart->Write(write_addr++, 0x01); // Memory offset 0x01
 	sCart->Write(write_addr++, 0x00); // Memory page 0x00
 	sCart->Write(write_addr++, 0xA9); // LDA_immediate
-	sCart->Write(write_addr++, 0x50); // literal 80
+	sCart->Write(write_addr++, 0x80); // literal 128
 	sCart->Write(write_addr++, 0x8D); // STA_absolute
-	sCart->Write(write_addr++, 0x03); // Memory offset 0x03
-	sCart->Write(write_addr++, 0x00); // Memory page 0x00
-
-	sCart->Write(write_addr++, 0x4C); // JMP_absolute
 	sCart->Write(write_addr++, 0x02); // Memory offset 0x02
 	sCart->Write(write_addr++, 0x00); // Memory page 0x00
+	sCart->Write(write_addr++, 0x6C); // JMP_indirect
+	sCart->Write(write_addr++, 0x01); // Memory offset 0x01
+	sCart->Write(write_addr++, 0x00); // Memory page 0x00
 	sCart->Write(write_addr++, 0xA9); // LDA_immediate
-	sCart->Write(write_addr++, 0x00); // literal 0
+	sCart->Write(write_addr++, 0x55); // literal 85
 	sCart->Write(write_addr++, 0x8D); // STA_absolute
 	sCart->Write(write_addr++, 0x00); // Memory offset 0x00
 	sCart->Write(write_addr++, 0x00); // Memory page 0x00
 	sCart->Write(write_addr++, 0xEA); // NOP
+	sCart->Write(write_addr++, 0xAD); // LDA_absolute
+	sCart->Write(write_addr++, 0x00); // Memory offset 0x00
+	sCart->Write(write_addr++, 0x00); // Memory page 0x00
 
 	ExecuteSystem();
 
