@@ -44,7 +44,17 @@ public:
 		return (registers.PS & statusFlag) == statusFlag;
 	}
 
-private:
+	// Used for debugging and testing.
+	CPURegisters GetRegisters()
+	{
+		return registers;
+	}
+
+	Opcodes GetCurrentOpcode()
+	{
+		return mCurrentOpcode;
+	}
+
 	enum OperandType
 	{
 		OT_Address,
@@ -56,6 +66,13 @@ private:
 		uint16_t operand;
 		OperandType operandType;
 	};
+
+	DecodedOperand GetCurrentOperand()
+	{
+		return mCurrentOperand;
+	}
+
+private:
 
 	DecodedOperand fetch_immediate();
 	DecodedOperand fetch_zeropage();
@@ -351,4 +368,8 @@ private:
 	};
 
 	std::shared_ptr<System> mSystem;
+
+	// Debug helper variables
+	Opcodes mCurrentOpcode;
+	DecodedOperand mCurrentOperand;
 };

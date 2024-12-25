@@ -26,6 +26,7 @@ bool CPU::Process()
 
 	SPDLOG_INFO("PC is {:#06x}", registers.PC);
 	Opcodes opcode = static_cast<Opcodes>(mSystem->Read(registers.PC));
+	mCurrentOpcode = opcode;
 	SPDLOG_INFO("Executing opcode {} ({:#04x})", OpcodeToString(opcode), static_cast<uint8_t>(opcode));
 	auto opcodeIter = opTable.find(opcode);
 	if (opcodeIter != opTable.end())
@@ -35,6 +36,7 @@ bool CPU::Process()
 		auto opFunc = std::bind(OpFuncs.opFunc, this, std::placeholders::_1);
 
 		DecodedOperand operand = fetchFunc();
+		mCurrentOperand = operand;
 		opFunc(operand);
 
 		++registers.PC;
