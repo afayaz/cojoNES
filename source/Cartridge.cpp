@@ -42,7 +42,7 @@ bool Cartridge::RemapAddress(uint16_t& address)
 {
 	bool valid = false;
 
-	if (address >= 0x8000 && address <= 0xFFFF)
+	if (mRom && address >= 0x8000 && address <= 0xFFFF)
 	{
 		// TODO: This assumes 16KB
 		address = address & 0x3FFF;
