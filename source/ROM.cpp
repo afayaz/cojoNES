@@ -3,6 +3,8 @@
 #include <fstream>
 #include <vector>
 
+#include <spdlog/spdlog.h>
+
 bool ROM::Load(const std::string& filename)
 {
 	bool success = false;
@@ -18,13 +20,16 @@ bool ROM::Load(const std::string& filename)
 		constexpr size_t kHeaderSize = 16;
 		constexpr size_t kTrainerSize = 512;
 
-		bool isNES20 = false;
-		bool hasTrainer = false;
+		mHeader.version = HV_Unknown;
+		mHeader.prgSize = 0;
+		mHeader.chrSize = 0;
+		mHeader.isHMirrored = true;
+		mHeader.hasBattery = false;
+		mHeader.hasTrainer = false;
+		mHeader.mapper = 0;
 
-		size_t prgSize = 0;
-		size_t chrSize = 0;
-
-		// Header
+		// Read header
+		// Based on info from https://www.nesdev.org/wiki/INES.
 		char header[kHeaderSize];
 		if (fileSize >= kHeaderSize)
 		{
@@ -37,21 +42,58 @@ bool ROM::Load(const std::string& filename)
 		{
 			if (header[0] == 'N' && header[1] == 'E' && header[2] == 'S' && header[3] == 0x1A)
 			{
-				if ((header[7] & 0x0C) == 0x08)
+				uint8_t headerVersionByte = header[7] & 0x0C;
+				if (headerVersionByte == 0x08)
 				{
-					isNES20 = true;
+					mHeader.version = HV_iNES_2_0;
+				}
+				else if (headerVersionByte == 0x04)
+				{
+					mHeader.version = HV_iNES_Archaic;
+				}
+				else if (headerVersionByte == 0x00)
+				{
+					mHeader.version = HV_iNES_1_0;
+				}
+
+				if (mHeader.version == HV_iNES_2_0)
+				{
+					// TODO: For now ignore MSB nibble being 0x0F
+					mHeader.prgSize = header[4] | (header[9] & 0x0F) << 8;
+					mHeader.prgSize *= 16384;
+					mHeader.chrSize = header[5] | (header[9] & 0xF0) << 8;
+					mHeader.chrSize *= 8192;
+				}
+				else
+				{
+					mHeader.prgSize = header[4] * 16384;
+					mHeader.chrSize = header[5] * 8192;
+				}
+
+				if ((header[6] & 0x01) == 0x01)
+				{
+					mHeader.isHMirrored = false;
 				}
 
 				if ((header[6] & 0x02) == 0x02)
 				{
-					hasTrainer = true;
+					mHeader.hasBattery = true;
 				}
 
-				// TODO: For now ignore MSB nibble being 0x0F
-				prgSize = header[4] | (header[9] & 0x0F << 8);
-				prgSize *= 16384;
-				chrSize = header[5] | (header[9] & 0xF0 << 8);
-				chrSize *= 8192;
+				if ((header[6] & 0x04) == 0x04)
+				{
+					mHeader.hasTrainer = true;
+				}
+
+				if (mHeader.version == HV_iNES_1_0)
+				{
+					// Check mapper
+					mHeader.mapper = (header[6] & 0xF0) >> 4;
+					mHeader.mapper |= (header[7] & 0x0F) << 4;
+				}
+
+				std::string headerVersionStr = HeaderVersionToString(mHeader.version);
+				SPDLOG_INFO("Successfully read iNES header. Version: {} Trainer: {}, Battery: {} Mapper: {} PRG Size: {} CHR Size: {}", headerVersionStr, mHeader.hasTrainer, mHeader.hasBattery, mHeader.mapper, mHeader.prgSize, mHeader.chrSize);
 			}
 			else
 			{
@@ -60,7 +102,7 @@ bool ROM::Load(const std::string& filename)
 		}
 
 		// Trainer area
-		if (success && hasTrainer)
+		if (success && mHeader.hasTrainer)
 		{
 			file.seekg(kTrainerSize, std::ios_base::cur);
 		}
@@ -69,15 +111,15 @@ bool ROM::Load(const std::string& filename)
 		if (success)
 		{
 			// TODO: Copying directly to RAM won't work for mappers that use bank switching...
-			mPrgRom.resize(static_cast<size_t>(prgSize), static_cast<uint8_t>(0));
-			file.read(reinterpret_cast<char*>(mPrgRom.data()), prgSize);
+			mPrgRom.resize(static_cast<size_t>(mHeader.prgSize), static_cast<uint8_t>(0));
+			file.read(reinterpret_cast<char*>(mPrgRom.data()), mHeader.prgSize);
 		}
 
 		// CHR-ROM
 		if (success)
 		{
-			mChrRom.resize(static_cast<size_t>(chrSize), static_cast<uint8_t>(0));
-			file.read(reinterpret_cast<char*>(mChrRom.data()), chrSize);
+			mChrRom.resize(static_cast<size_t>(mHeader.chrSize), static_cast<uint8_t>(0));
+			file.read(reinterpret_cast<char*>(mChrRom.data()), mHeader.chrSize);
 		}
 	}
 

@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-class ROM;
+#include "ROM.hpp"
 
 class Cartridge
 {
@@ -13,6 +13,8 @@ public:
 
 	uint8_t Read(uint16_t address);
 	void    Write(uint16_t address, uint8_t data);
+
+	NESHeader GetHeader() { return mRom ? mRom->GetHeader() : NESHeader{}; }
 
 private:
 	bool    RemapAddress(uint16_t& address);
