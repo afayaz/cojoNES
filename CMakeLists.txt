@@ -45,13 +45,7 @@ option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
 include(Dependencies.cmake)
 cojoNES_setup_dependencies()
 
-# Extra target for tests.
-add_executable(cojoNES_tests tests/test.cpp source/Cartridge.cpp source/CPU.cpp source/ROM.cpp source/System.cpp)
-target_include_directories(cojoNES_tests PRIVATE dependencies/Catch2/src)
-target_include_directories(cojoNES_tests PRIVATE source)
-target_link_libraries(cojoNES_tests PRIVATE Catch2::Catch2WithMain)
-target_link_system_libraries(cojoNES_tests PRIVATE fmt::fmt spdlog::spdlog)
-
 # TODO: Implement fuzzing?
 
 add_subdirectory(source)
+add_subdirectory(tests)
