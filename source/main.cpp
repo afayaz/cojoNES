@@ -66,6 +66,7 @@ int main(int argc, char** argv)
 		if (!window)
 		{
 			SPDLOG_ERROR("Failed to create SDL_Window! Error code: {}", SDL_GetError());
+			return 1;
 		}
 
 		SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
@@ -73,7 +74,7 @@ int main(int argc, char** argv)
 		if (!renderer)
 		{
 			SPDLOG_ERROR("Failed to create SDL_Renderer! Error code: {}", SDL_GetError());
-			return -1;
+			return 1;
 		}
 		SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 		SDL_ShowWindow(window);
