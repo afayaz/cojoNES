@@ -122,6 +122,8 @@ int main(int argc, char** argv)
 			ImGui::NewFrame();
 
 			{
+				ImGui::SetNextWindowPos(ImVec2(5.0f, 5.0f), ImGuiCond_FirstUseEver);
+				ImGui::SetNextWindowSize(ImVec2(190.0f, 195.0f), ImGuiCond_FirstUseEver);
 				ImGui::Begin("ROM Info");
 
 				if (ImGui::Button("Load ROM"))
@@ -169,6 +171,8 @@ int main(int argc, char** argv)
 			{
 				static int memStart = 0x8000;
 
+				ImGui::SetNextWindowPos(ImVec2(200.0f, 5.0f), ImGuiCond_FirstUseEver);
+				ImGui::SetNextWindowSize(ImVec2(420.0f, 340.0f), ImGuiCond_FirstUseEver);
 				ImGui::Begin("Memory");
 				ImGui::InputInt("Address", &memStart, 0x10, 0x100, ImGuiInputTextFlags_CharsHexadecimal);
 
@@ -202,6 +206,8 @@ int main(int argc, char** argv)
 
 			static bool stepMode = false;
 			{
+				ImGui::SetNextWindowPos(ImVec2(5.0f, 205.0f), ImGuiCond_FirstUseEver);
+				ImGui::SetNextWindowSize(ImVec2(190.0f, 195.0f), ImGuiCond_FirstUseEver);
 				ImGui::Begin("CPU");
 
 				ImGui::Checkbox("Step mode", &stepMode);
