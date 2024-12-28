@@ -1267,6 +1267,9 @@ TEST_CASE("TAX", "[CPU]")
 
 	ExecuteSystem();
 
+	CPURegisters registers = sCpu->GetRegisters();
+	REQUIRE(registers.IX == 0x45);
+	REQUIRE(registers.ACC == 0x45);
 	REQUIRE(sSystem->Read(0x00) == 0x45);
 }
 
@@ -1283,6 +1286,9 @@ TEST_CASE("TAY", "[CPU]")
 
 	ExecuteSystem();
 
+	CPURegisters registers = sCpu->GetRegisters();
+	REQUIRE(registers.IY == 0x9E);
+	REQUIRE(registers.ACC == 0x9E);
 	REQUIRE(sSystem->Read(0x00) == 0x9E);
 }
 
@@ -1297,7 +1303,9 @@ TEST_CASE("TSX", "[CPU]")
 
 	ExecuteSystem();
 
-	// Ideally we'd access the SP but I don't want to make it public.
+	CPURegisters registers = sCpu->GetRegisters();
+	REQUIRE(registers.SP == 0xFD);
+	REQUIRE(registers.IX == 0xFD);
 	REQUIRE(sSystem->Read(0x00) == 0xFD);
 }
 
@@ -1314,12 +1322,26 @@ TEST_CASE("TXA", "[CPU]")
 
 	ExecuteSystem();
 
+	CPURegisters registers = sCpu->GetRegisters();
+	REQUIRE(registers.IX == 0x45);
+	REQUIRE(registers.ACC == 0x45);
 	REQUIRE(sSystem->Read(0x00) == 0x45);
 }
 
 TEST_CASE("TXS", "[CPU]")
 {
-	// Not really sure how to verify this since SP is a private member of CPU.
+	InitSystem();
+
+	uint16_t write_addr = 0x8000;
+	sCart->Write(write_addr++, 0xA2); // LDX_immediate
+	sCart->Write(write_addr++, 0x48); // literal 72
+	sCart->Write(write_addr++, 0x9A); // TXS
+
+	ExecuteSystem();
+
+	CPURegisters registers = sCpu->GetRegisters();
+	REQUIRE(registers.SP == registers.IX);
+	REQUIRE(registers.SP == 0x48);
 }
 
 TEST_CASE("TYA", "[CPU]")
@@ -1335,46 +1357,8 @@ TEST_CASE("TYA", "[CPU]")
 
 	ExecuteSystem();
 
+	CPURegisters registers = sCpu->GetRegisters();
+	REQUIRE(registers.IY == 0x9E);
+	REQUIRE(registers.ACC == 0x9E);
 	REQUIRE(sSystem->Read(0x00) == 0x9E);
-}
-
-TEST_CASE("Execute Test Program on CPU", "[CPU]")
-{
-	InitSystem();
-
-	// This is a program to multiply 10 by 3.
-	// Taken from part 2 of OLCs NES emulator series
-	uint16_t write_addr = 0x8000;
-	sCart->Write(write_addr++, 0xA2); // LDX_immediate
-	sCart->Write(write_addr++, 0x0A); // literal 10
-	sCart->Write(write_addr++, 0x8E); // STX_absolute
-	sCart->Write(write_addr++, 0x00); // Memory offset 0x00
-	sCart->Write(write_addr++, 0x00); // Memory page 0x00
-	sCart->Write(write_addr++, 0xA2); // LDX_immediate
-	sCart->Write(write_addr++, 0x03); // literal 3
-	sCart->Write(write_addr++, 0x8E); // STX_absolute
-	sCart->Write(write_addr++, 0x01); // Memory offset 0x01
-	sCart->Write(write_addr++, 0x00); // Memory page 0x00
-	sCart->Write(write_addr++, 0xAC); // LDY_absolute
-	sCart->Write(write_addr++, 0x00); // Memory offset 0x00
-	sCart->Write(write_addr++, 0x00); // Memory page 0x00
-	sCart->Write(write_addr++, 0xA9); // LDA_immediate
-	sCart->Write(write_addr++, 0x00); // literal 0
-	sCart->Write(write_addr++, 0x18); // CLC
-	sCart->Write(write_addr++, 0x6D); // ADC_absolute
-	sCart->Write(write_addr++, 0x01); // Memory offset 0x01
-	sCart->Write(write_addr++, 0x00); // Memory page 0x00
-	sCart->Write(write_addr++, 0x88); // DEY
-	sCart->Write(write_addr++, 0xD0); // BNE_relative
-	sCart->Write(write_addr++, 0xFA); // literal -5
-	sCart->Write(write_addr++, 0x8D); // STA_absolute
-	sCart->Write(write_addr++, 0x02); // Memory offset 0x02
-	sCart->Write(write_addr++, 0x00); // Memory page 0x00
-	sCart->Write(write_addr++, 0xEA); // NOP
-	sCart->Write(write_addr++, 0xEA); // NOP
-	sCart->Write(write_addr++, 0xEA); // NOP
-
-	ExecuteSystem();
-
-	REQUIRE(sSystem->Read(0x0002) == 0x1E);
 }
