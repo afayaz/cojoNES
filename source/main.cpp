@@ -123,28 +123,78 @@ int main(int argc, char** argv)
 
 			{
 				ImGui::SetNextWindowPos(ImVec2(5.0f, 5.0f), ImGuiCond_FirstUseEver);
-				ImGui::SetNextWindowSize(ImVec2(190.0f, 195.0f), ImGuiCond_FirstUseEver);
-				ImGui::Begin("ROM Info");
+				ImGui::SetNextWindowSize(ImVec2(190.0f, 220.0f), ImGuiCond_FirstUseEver);
+				ImGui::Begin("Program");
 
-				if (ImGui::Button("Load ROM"))
+				if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
 				{
-					SDL_ShowOpenFileDialog(FileDialogCallback, nullptr, window, nullptr, 0, nullptr, false);
+					if (ImGui::BeginTabItem("ROM Info"))
+					{
+						if (ImGui::Button("Load ROM"))
+						{
+							SDL_ShowOpenFileDialog(FileDialogCallback, nullptr, window, nullptr, 0, nullptr, false);
+						}
+
+						size_t pos = romPath.find_last_of("\\/");
+						std::string filename = romPath.substr(pos + 1);
+						ImGui::Text("%s", filename.c_str());
+
+						ImGui::Separator();
+
+						NESHeader romHeader = cart->GetHeader();
+						ImGui::Text("Header version: %s", HeaderVersionToString(romHeader.version));
+						ImGui::Text("prgSize: %d", romHeader.prgSize);
+						ImGui::Text("chrSize: %d", romHeader.chrSize);
+						ImGui::Text("isHMirrored: %d", romHeader.isHMirrored);
+						ImGui::Text("hasBattery: %d", romHeader.hasBattery);
+						ImGui::Text("hasTrainer: %d", romHeader.hasTrainer);
+						ImGui::Text("Mapper: %d", romHeader.mapper);
+
+						ImGui::EndTabItem();
+					}
+					
+					if (ImGui::BeginTabItem("Edit ROM"))
+					{
+						if (ImGui::Button("Init blank cartridge"))
+						{
+							// Currently required to init memory above 0x8000.
+							bool loaded = cart->Load();
+
+							system = std::make_shared<System>(cpu, memory, cart);
+
+							// Write reset vector 0x8000 to simulate cart.
+							system->Write(0xFFFC, 0x00);
+							system->Write(0xFFFD, 0x80);
+
+							system->Reset();
+
+							// This can be used to debug and test small programs:
+							//uint16_t write_addr = 0x8000;
+							//cart->Write(write_addr++, 0xA9); // LDA_immediate
+							//cart->Write(write_addr++, 0x2A); // literal 42
+							//cart->Write(write_addr++, 0x8D); // STA_absolute
+							//cart->Write(write_addr++, 0x00); // Memory offset 0x00
+							//cart->Write(write_addr++, 0x00); // Memory page 0x00
+						}
+
+						static int addr = 0;
+						ImGui::InputInt("Address", &addr, 0x1, 0x10, ImGuiInputTextFlags_CharsHexadecimal);
+						addr = std::clamp(addr, 0x00, 0xFFFF);
+
+						static int val = 0;
+						ImGui::InputInt("Value", &val, 0x1, 0x10, ImGuiInputTextFlags_CharsHexadecimal);
+						val = std::clamp(val, 0x00, 0xFF);
+
+						if (ImGui::Button("Set Memory Value"))
+						{
+							system->Write(addr, val);
+						}
+
+						ImGui::EndTabItem();
+					}
 				}
 
-				size_t pos = romPath.find_last_of("\\/");
-				std::string filename = romPath.substr(pos+1);
-				ImGui::Text("%s", filename.c_str());
-
-				ImGui::Separator();
-
-				NESHeader romHeader = cart->GetHeader();
-				ImGui::Text("Header version: %s", HeaderVersionToString(romHeader.version));
-				ImGui::Text("prgSize: %d", romHeader.prgSize);
-				ImGui::Text("chrSize: %d", romHeader.chrSize);
-				ImGui::Text("isHMirrored: %d", romHeader.isHMirrored);
-				ImGui::Text("hasBattery: %d", romHeader.hasBattery);
-				ImGui::Text("hasTrainer: %d", romHeader.hasTrainer);
-				ImGui::Text("Mapper: %d", romHeader.mapper);
+				ImGui::EndTabBar();
 
 				ImGui::End();
 			}
@@ -206,7 +256,7 @@ int main(int argc, char** argv)
 
 			static bool stepMode = false;
 			{
-				ImGui::SetNextWindowPos(ImVec2(5.0f, 205.0f), ImGuiCond_FirstUseEver);
+				ImGui::SetNextWindowPos(ImVec2(5.0f, 230.0f), ImGuiCond_FirstUseEver);
 				ImGui::SetNextWindowSize(ImVec2(190.0f, 195.0f), ImGuiCond_FirstUseEver);
 				ImGui::Begin("CPU");
 
@@ -223,7 +273,7 @@ int main(int argc, char** argv)
 
 				CPURegisters r = cpu->GetRegisters();
 
-				ImGui::Text("Opcode: %s", OpcodeToString(cpu->GetCurrentOpcode()));
+				ImGui::Text("Opcode: %s (%02X)", OpcodeToString(cpu->GetCurrentOpcode()), cpu->GetCurrentOpcode());
 
 				CPU::DecodedOperand operand = cpu->GetCurrentOperand();
 				ImGui::Text("Operand: %s %04X", operand.operandType == CPU::OT_Address ? "Address" : "Value", operand.operand);
