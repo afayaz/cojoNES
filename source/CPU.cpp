@@ -25,7 +25,7 @@ bool CPU::Process()
 	bool shouldContinue = true;
 
 	SPDLOG_INFO("PC is {:#06x}", registers.PC);
-	Opcodes opcode = static_cast<Opcodes>(mSystem->Read(registers.PC));
+	Opcodes opcode = static_cast<Opcodes>(mSystem->Read(registers.PC++));
 	mCurrentOpcode = opcode;
 	SPDLOG_INFO("Executing opcode {} ({:#04x})", OpcodeToString(opcode), static_cast<uint8_t>(opcode));
 	auto opcodeIter = opTable.find(opcode);
@@ -38,8 +38,6 @@ bool CPU::Process()
 		DecodedOperand operand = fetchFunc();
 		mCurrentOperand = operand;
 		opFunc(operand);
-
-		++registers.PC;
 
 		SPDLOG_INFO("Registers: ACC = {:#04x} IX = {:#04x} IY = {:#04x}, PC = {:#06x}, PS = {:#04x}, SP = {:#04x}", registers.ACC, registers.IX, registers.IY, registers.PC, registers.PS, registers.SP);
 		if (opcode == Opcodes::BRK)
@@ -62,7 +60,7 @@ CPU::DecodedOperand CPU::fetch_immediate()
 
 	DecodedOperand decoded;
 
-	decoded.operand = mSystem->Read(++registers.PC);
+	decoded.operand = mSystem->Read(registers.PC++);
 	decoded.operandType = OT_Value;
 
 	return decoded;
@@ -73,7 +71,7 @@ CPU::DecodedOperand CPU::fetch_zeropage()
 	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
-	decoded.operand = mSystem->Read(++registers.PC);
+	decoded.operand = mSystem->Read(registers.PC++);
 	decoded.operandType = OT_Address;
 
 	return decoded;
@@ -84,7 +82,7 @@ CPU::DecodedOperand CPU::fetch_zeropage_X()
 	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
-	decoded.operand = mSystem->Read(++registers.PC) + registers.IX;
+	decoded.operand = mSystem->Read(registers.PC++) + registers.IX;
 	decoded.operandType = OT_Address;
 
 	return decoded;
@@ -95,7 +93,7 @@ CPU::DecodedOperand CPU::fetch_zeropage_Y()
 	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
-	decoded.operand = mSystem->Read(++registers.PC) + registers.IY;
+	decoded.operand = mSystem->Read(registers.PC++) + registers.IY;
 	decoded.operandType = OT_Address;
 
 	return decoded;
@@ -107,8 +105,8 @@ CPU::DecodedOperand CPU::fetch_absolute()
 
 	DecodedOperand decoded;
 
-	uint16_t lo = mSystem->Read(++registers.PC);
-	uint16_t hi = mSystem->Read(++registers.PC);
+	uint16_t lo = mSystem->Read(registers.PC++);
+	uint16_t hi = mSystem->Read(registers.PC++);
 
 	decoded.operand = lo | hi << 8;
 	decoded.operandType = OT_Address;
@@ -121,8 +119,8 @@ CPU::DecodedOperand CPU::fetch_absolute_X()
 	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
-	uint16_t lo = mSystem->Read(++registers.PC);
-	uint16_t hi = mSystem->Read(++registers.PC);
+	uint16_t lo = mSystem->Read(registers.PC++);
+	uint16_t hi = mSystem->Read(registers.PC++);
 
 	uint8_t baseAddress = lo | hi << 8;
 	decoded.operand = baseAddress + registers.IX;
@@ -136,8 +134,8 @@ CPU::DecodedOperand CPU::fetch_absolute_Y()
 	SPDLOG_INFO("{}", __func__);
 	DecodedOperand decoded;
 
-	uint16_t lo = mSystem->Read(++registers.PC);
-	uint16_t hi = mSystem->Read(++registers.PC);
+	uint16_t lo = mSystem->Read(registers.PC++);
+	uint16_t hi = mSystem->Read(registers.PC++);
 
 	uint8_t baseAddress = lo | hi << 8;
 	decoded.operand = baseAddress + registers.IY;
@@ -152,8 +150,8 @@ CPU::DecodedOperand CPU::fetch_indirect()
 
 	DecodedOperand decoded;
 
-	uint16_t baseAddress_lo = mSystem->Read(++registers.PC);
-	uint16_t baseAddress_hi = mSystem->Read(++registers.PC);
+	uint16_t baseAddress_lo = mSystem->Read(registers.PC++);
+	uint16_t baseAddress_hi = mSystem->Read(registers.PC++);
 
 	uint16_t baseAddress = baseAddress_lo | baseAddress_hi << 8;
 	
@@ -175,7 +173,7 @@ CPU::DecodedOperand CPU::fetch_indirect_X()
 	DecodedOperand decoded;
 
 	// TODO: I have no idea if this is right, the description is a bit unclear...
-	uint8_t baseAddress = mSystem->Read(++registers.PC);
+	uint8_t baseAddress = mSystem->Read(registers.PC++);
 	decoded.operand = mSystem->Read(baseAddress + registers.IX + (registers.PS & PS_CarryFlag));
 	decoded.operandType = OT_Address;
 
@@ -189,7 +187,7 @@ CPU::DecodedOperand CPU::fetch_indirect_Y()
 	DecodedOperand decoded;
 
 	// TODO: No idea if this is right, copied from fetch_indirect_X()...
-	uint8_t baseAddress = mSystem->Read(++registers.PC);
+	uint8_t baseAddress = mSystem->Read(registers.PC++);
 	decoded.operand = mSystem->Read(baseAddress + registers.IY + (registers.PS & PS_CarryFlag));
 	decoded.operandType = OT_Address;
 
@@ -214,8 +212,7 @@ CPU::DecodedOperand CPU::fetch_relative()
 
 	DecodedOperand decoded;
 
-	// Don't increment the PC here, so the offset below is correct.
-	int16_t relativeAddress = mSystem->Read(registers.PC + 1);
+	int16_t relativeAddress = mSystem->Read(registers.PC++);
 	if (relativeAddress > 0x80)
 	{
 		relativeAddress -= 0xFF;
@@ -336,10 +333,6 @@ void CPU::BCC(DecodedOperand decoded)
 	{
 		registers.PC = decoded.operand;
 	}
-	else
-	{
-		++registers.PC;
-	}
 }
 
 void CPU::BCS(DecodedOperand decoded)
@@ -349,10 +342,6 @@ void CPU::BCS(DecodedOperand decoded)
 	{
 		registers.PC = decoded.operand;
 	}
-	else
-	{
-		++registers.PC;
-	}
 }
 
 void CPU::BEQ(DecodedOperand decoded)
@@ -361,10 +350,6 @@ void CPU::BEQ(DecodedOperand decoded)
 	if (GetProcessorStatus(PS_ZeroFlag))
 	{
 		registers.PC = decoded.operand;
-	}
-	else
-	{
-		++registers.PC;
 	}
 }
 
@@ -388,10 +373,6 @@ void CPU::BMI(DecodedOperand decoded)
 	{
 		registers.PC = decoded.operand;
 	}
-	else
-	{
-		++registers.PC;
-	}
 }
 
 void CPU::BNE(DecodedOperand decoded)
@@ -401,10 +382,6 @@ void CPU::BNE(DecodedOperand decoded)
 	{
 		registers.PC = decoded.operand;
 	}
-	else
-	{
-		++registers.PC;
-	}
 }
 
 void CPU::BPL(DecodedOperand decoded)
@@ -413,10 +390,6 @@ void CPU::BPL(DecodedOperand decoded)
 	if (!GetProcessorStatus(PS_NegativeFlag))
 	{
 		registers.PC = decoded.operand;
-	}
-	else
-	{
-		++registers.PC;
 	}
 }
 
@@ -433,10 +406,6 @@ void CPU::BVC(DecodedOperand decoded)
 	{
 		registers.PC = decoded.operand;
 	}
-	else
-	{
-		++registers.PC;
-	}
 }
 
 void CPU::BVS(DecodedOperand decoded)
@@ -445,10 +414,6 @@ void CPU::BVS(DecodedOperand decoded)
 	if (GetProcessorStatus(PS_OverflowFlag))
 	{
 		registers.PC = decoded.operand;
-	}
-	else
-	{
-		++registers.PC;
 	}
 }
 
@@ -626,14 +591,16 @@ void CPU::INY(DecodedOperand decoded)
 void CPU::JMP(DecodedOperand decoded)
 {
 	SPDLOG_INFO("{}", __func__);
-	registers.PC = decoded.operand - 1;
+	registers.PC = decoded.operand;
 }
 
 void CPU::JSR(DecodedOperand decoded)
 {
 	SPDLOG_INFO("{}", __func__);
-	mSystem->Write(0x100 + registers.SP--, (registers.PC - 1) >> 8);
-	mSystem->Write(0x100 + registers.SP--, registers.PC  - 1);
+
+	mSystem->Write(0x100 + registers.SP--, (registers.PC) >> 8);
+	mSystem->Write(0x100 + registers.SP--, (registers.PC) & 0xFF);
+
 	registers.PC = decoded.operand;
 }
 
@@ -850,8 +817,8 @@ void CPU::RTS(DecodedOperand decoded)
 {
 	SPDLOG_INFO("{}", __func__);
 
-	uint8_t lo = mSystem->Read(0x100 + registers.SP++);
-	uint8_t hi = mSystem->Read(0x100 + registers.SP++);
+	uint8_t lo = mSystem->Read(0x100 + ++registers.SP);
+	uint8_t hi = mSystem->Read(0x100 + ++registers.SP);
 
 	registers.PC = lo | hi << 8;
 }
