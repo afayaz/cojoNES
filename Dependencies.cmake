@@ -9,11 +9,11 @@ function(cojoNES_setup_dependencies)
   # already been provided to us by a parent project
 
   if(NOT TARGET Catch2::Catch2WithMain)
-    CPMAddPackage("gh:catchorg/Catch2@3.3.2")
+    CPMAddPackage("gh:catchorg/Catch2@3.8.0")
   endif()
 
   if(NOT TARGET fmtlib::fmtlib)
-    CPMAddPackage("gh:fmtlib/fmt#9.1.0")
+    CPMAddPackage("gh:fmtlib/fmt#11.1.4")
   endif()
 
   # SDL3 and Imgui must be in this order to ensure Imgui's SDL3 backend can see
@@ -24,7 +24,7 @@ function(cojoNES_setup_dependencies)
     CPMAddPackage(
         NAME SDL3
         GITHUB_REPOSITORY libsdl-org/SDL
-        GIT_TAG preview-3.1.6
+        GIT_TAG release-3.2.8
         OPTIONS
         "BUILD_SHARED_LIBS ON"
         "SDL_DISABLE_INSTALL ON"
@@ -37,7 +37,7 @@ function(cojoNES_setup_dependencies)
     CPMAddPackage(
         NAME imgui
         GITHUB_REPOSITORY ocornut/imgui
-        GIT_TAG v1.91.6)
+        GIT_TAG v1.91.8)
   endif()
 
   add_library(imgui ${imgui_SOURCE_DIR}/imgui.cpp ${imgui_SOURCE_DIR}/imgui_demo.cpp ${imgui_SOURCE_DIR}/imgui_draw.cpp ${imgui_SOURCE_DIR}/imgui_tables.cpp ${imgui_SOURCE_DIR}/imgui_widgets.cpp ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp)
@@ -52,7 +52,7 @@ function(cojoNES_setup_dependencies)
       NAME
       spdlog
       VERSION
-      1.11.0
+      1.15.1
       GITHUB_REPOSITORY
       "gabime/spdlog"
       OPTIONS
